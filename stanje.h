@@ -9,7 +9,8 @@
 #include <QFont>
 #include <QString>
 
-class Stanje : public QGraphicsEllipseItem {
+class Stanje : public QGraphicsEllipseItem
+{
 public:
     // konstruktor klase
     Stanje(int x, int y, QString naslovStanja);

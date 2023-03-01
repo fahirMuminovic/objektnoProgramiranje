@@ -14,7 +14,8 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         dialog.cpp \
-    stanje.cpp
+    stanje.cpp \
+    tranzicija.cpp
 
 HEADERS  += dialog.h \
     stanje.h \
