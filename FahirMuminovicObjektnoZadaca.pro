@@ -17,6 +17,7 @@ SOURCES += main.cpp\
     stanje.cpp
 
 HEADERS  += dialog.h \
-    stanje.h
+    stanje.h \
+    tranzicija.h
 
 FORMS    += dialog.ui

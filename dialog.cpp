@@ -44,3 +44,17 @@ void Dialog::inicijalizirajElemente(){
     scene->addItem(runStanje);
     scene->addItem(stopStanje);
 }
+
+void Dialog::on_kreirajProces_clicked(){
+    if(startStanje->brojProcesa < 5){
+        startStanje->brojProcesa++;
+        ui->graphicsView->viewport()->repaint();
+    }
+}
+
+void Dialog::on_unistiProces_clicked(){
+    if(stopStanje->brojProcesa > 0){
+        stopStanje->brojProcesa--;
+        ui->graphicsView->viewport()->repaint();
+    }
+}

@@ -4,7 +4,7 @@ Stanje::Stanje(int x, int y, QString naslovStanja){
     koordinataX = x;
     koordinataY = y;
     naslov = naslovStanja;
-    brojProcesa = 5;
+    brojProcesa = 0;
     setFlag(ItemIsMovable);
 }
 
@@ -33,16 +33,17 @@ void Stanje::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, 
 
     //iscrtavanje naslova elementa
     painter->setFont(font);
-    painter->drawText(koordinataX + 27, koordinataY + 40, naslov);
+    painter->drawText(koordinataX + 28, koordinataY + 40, naslov);
+
     // iscrtavanje reda čekanja elementa
     painter->setPen(pen);
     painter->setBrush(sivaBoja);
 
-    painter->drawRect(QRect(koordinataX + 13+0,koordinataY + 50, 15, 15));
-    painter->drawRect(QRect(koordinataX + 13+30,koordinataY + 50, 15, 15));
-    painter->drawRect(QRect(koordinataX + 13+15,koordinataY + 50, 15, 15));
-    painter->drawRect(QRect(koordinataX + 13+45,koordinataY + 50, 15, 15));
-    painter->drawRect(QRect(koordinataX + 13+60,koordinataY + 50, 15, 15));
+    painter->drawRect(QRect(koordinataX + 12+0, koordinataY + 50, 15, 15));
+    painter->drawRect(QRect(koordinataX + 12+15,koordinataY + 50, 15, 15));
+    painter->drawRect(QRect(koordinataX + 12+30,koordinataY + 50, 15, 15));
+    painter->drawRect(QRect(koordinataX + 12+45,koordinataY + 50, 15, 15));
+    painter->drawRect(QRect(koordinataX + 12+60,koordinataY + 50, 15, 15));
 
     // iscrtavanje procesa unutar reda čekanja za element
     painter->setBrush(crvenaBoja);

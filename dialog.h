@@ -24,6 +24,10 @@ public:
     // funkcija "crta" elemente na QGraphicsView
     void inicijalizirajElemente();
 
+private slots:
+    void on_kreirajProces_clicked();
+    void on_unistiProces_clicked();
+
 private:
     Ui::Dialog *ui;
     QGraphicsScene *scene;
