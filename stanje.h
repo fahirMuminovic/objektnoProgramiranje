@@ -16,8 +16,8 @@ public:
     Stanje(int x, int y, QString naslovStanja);
     // metoda paint overloada QPainter
     void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
-    // vraća koordinate elementa na QGraphicsView
-    QRectF pozicijaElementa() const;
+    // određuje granice elementa na view-u
+    QRectF boundingRect() const;
     // broj procesa koji su inicijalizirani unutar stanja
     int brojProcesa;
 

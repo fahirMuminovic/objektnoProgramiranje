@@ -18,12 +18,10 @@ class Tranzicija : public QObject, public QGraphicsItem
     Q_OBJECT
 public:
     // konstruktor klase
-    Tranzicija(int koordinataX, int koordinataY, int duzina, int rotacija);
-    // metoda paint overloada QPainter
-    void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
-    // vraća koordinate elementa na QGraphicsView
-    QRectF pozicijaElementa() const;
-
+    Tranzicija(int koordinataX, int koordinataY,int duzina, int rotacija);
+    // metoda overloada QPainter
+    void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget  * widget);
+    QRectF boundingRect() const;
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -32,14 +30,13 @@ signals:
     void onClick();
 
 public:
+    int duzina;
     int koordinataX;
     int koordinataY;
     int tempX;
     int tempY;
     int rotacija;
-    int duzina;
     QTimer *timer;
 };
 
 #endif // TRANZICIJA_H
-

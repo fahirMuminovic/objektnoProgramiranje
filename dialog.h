@@ -21,22 +21,22 @@ public:
     explicit Dialog(QWidget *parent = 0);
     ~Dialog();
     // funkcija pravi elemente "stanje"
-    void inicijalizirajStanja();
-    // funkcija "crta" elemente na QGraphicsView
     void inicijalizirajElemente();
+    // funkcija "crta" elemente na QGraphicsView
+    void iscrtajElemente();
     // spoji signale
-    void konektujSignale();
-    bool provjeriErrore(Tranzicija *tranzicija,Stanje *izStanja, Stanje *doStanja);
+    //void konektujSignale();
+    //bool provjeriErrore(Tranzicija *tranzicija,Stanje *izStanja, Stanje *doStanja);
 
 private slots:
     void on_kreirajProces_clicked();
     void on_unistiProces_clicked();
-    void startReadyClicked();
-    void runReadyClicked();
-    void runStopClicked();
-    void readyRunClicked();
-    void waitReadyClicked();
-    void runWaitClicked();
+//    void startReadyClicked();
+//    void runReadyClicked();
+//    void runStopClicked();
+//    void readyRunClicked();
+//    void waitReadyClicked();
+//    void runWaitClicked();
 
 private:
     Ui::Dialog *ui;
@@ -55,13 +55,13 @@ private:
     Tranzicija *runWaitTranzicija;
     Tranzicija *runStopTranzicija;
 
-public slots:
-    void pomjeriProcesStartReady();
-    void pomjeriProcesReadyRun();
-    void pomjeriProcesRunReady();
-    void pomjeriProcesWaitReady();
-    void pomjeriProcesRunWait();
-    void pomjeriProcesRunStop();
+//public slots:
+//    void pomjeriProcesStartReady();
+//    void pomjeriProcesReadyRun();
+//    void pomjeriProcesRunReady();
+//    void pomjeriProcesWaitReady();
+//    void pomjeriProcesRunWait();
+//    void pomjeriProcesRunStop();
 };
 
 #endif // DIALOG_H

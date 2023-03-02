@@ -5,12 +5,11 @@ Stanje::Stanje(int x, int y, QString naslovStanja){
     koordinataY = y;
     naslov = naslovStanja;
     brojProcesa = 0;
-    setFlag(ItemIsMovable);
 }
 
 void Stanje::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget){
-    // koordinate elementa na QGraphicsView-u
-    QRectF koordinateElementa = pozicijaElementa();
+    // koordinate za iscrtavanje ruba elementa koje uzimamo iz boundingRect() funkcije
+    QRectF koordinateRuba = boundingRect() ;
     // boje koje se koriste za element
     QBrush zutaBoja(Qt::yellow);
     QBrush sivaBoja(Qt::gray);
@@ -29,7 +28,7 @@ void Stanje::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, 
     // iscrtavanje glavnog dijela elementa
     painter->setPen(rubElementa);
     painter->setBrush(zutaBoja);
-    painter->drawEllipse(koordinateElementa);
+    painter->drawEllipse(koordinateRuba);
 
     //iscrtavanje naslova elementa
     painter->setFont(font);
@@ -39,11 +38,11 @@ void Stanje::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, 
     painter->setPen(pen);
     painter->setBrush(sivaBoja);
 
-    painter->drawRect(QRect(koordinataX + 12+0, koordinataY + 50, 15, 15));
-    painter->drawRect(QRect(koordinataX + 12+15,koordinataY + 50, 15, 15));
-    painter->drawRect(QRect(koordinataX + 12+30,koordinataY + 50, 15, 15));
-    painter->drawRect(QRect(koordinataX + 12+45,koordinataY + 50, 15, 15));
-    painter->drawRect(QRect(koordinataX + 12+60,koordinataY + 50, 15, 15));
+    painter->drawRect(QRect(koordinataX + 12,koordinataY + 50, 15, 15));
+    painter->drawRect(QRect(koordinataX + 27,koordinataY + 50, 15, 15));
+    painter->drawRect(QRect(koordinataX + 42,koordinataY + 50, 15, 15));
+    painter->drawRect(QRect(koordinataX + 57,koordinataY + 50, 15, 15));
+    painter->drawRect(QRect(koordinataX + 72,koordinataY + 50, 15, 15));
 
     // iscrtavanje procesa unutar reda čekanja za element
     painter->setBrush(crvenaBoja);
@@ -52,7 +51,7 @@ void Stanje::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, 
     }
 }
 
-// funkcija koja vraca koordinate elementa "stanje"
-QRectF Stanje::pozicijaElementa() const{
+// funkcija koja definira granice elementa
+QRectF Stanje::boundingRect() const{
     return QRectF(koordinataX, koordinataY, 100, 100);
 }
