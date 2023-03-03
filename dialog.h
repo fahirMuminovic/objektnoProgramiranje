@@ -25,18 +25,17 @@ public:
     // funkcija "crta" elemente na QGraphicsView
     void iscrtajElemente();
     // spoji signale
-    //void konektujSignale();
-    //bool provjeriErrore(Tranzicija *tranzicija,Stanje *izStanja, Stanje *doStanja);
+    void konektujSignale();
+    // koristi se za provjeru broja procesa unutar stanja
+    bool provjeriErrore(Stanje *izStanja, Stanje *doStanja);
 
 private slots:
+    // reaguje na klik pushButtona imena kreirajProces
     void on_kreirajProces_clicked();
+    // reaguje na klik pushButtona imena kreirajProces
     void on_unistiProces_clicked();
-//    void startReadyClicked();
-//    void runReadyClicked();
-//    void runStopClicked();
-//    void readyRunClicked();
-//    void waitReadyClicked();
-//    void runWaitClicked();
+    // pomjera proces iz jednog stanja u drugo
+    void pomjeriProces();
 
 private:
     Ui::Dialog *ui;
@@ -54,14 +53,6 @@ private:
     Tranzicija *waitReadyTranzicija;
     Tranzicija *runWaitTranzicija;
     Tranzicija *runStopTranzicija;
-
-//public slots:
-//    void pomjeriProcesStartReady();
-//    void pomjeriProcesReadyRun();
-//    void pomjeriProcesRunReady();
-//    void pomjeriProcesWaitReady();
-//    void pomjeriProcesRunWait();
-//    void pomjeriProcesRunStop();
 };
 
 #endif // DIALOG_H

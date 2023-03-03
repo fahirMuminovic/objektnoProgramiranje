@@ -49,6 +49,7 @@ void Stanje::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, 
     for (int i = 0; i < brojProcesa; i ++){
         painter->drawEllipse(QRect(koordinataX + 15 * (i+1), koordinataY + 52, 10, 10));
     }
+
 }
 
 // funkcija koja definira granice elementa

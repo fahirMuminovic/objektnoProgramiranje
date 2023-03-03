@@ -22,7 +22,7 @@ Dialog::Dialog(QWidget *parent) :
     // iscrtaj elemente na QGraphicsView
     iscrtajElemente();
     // konektuj signale
-    // konektujSignale();
+    konektujSignale();
 }
 
 Dialog::~Dialog()
@@ -37,12 +37,13 @@ void Dialog::inicijalizirajElemente() {
     runStanje = new Stanje(120, -65, QString("Run"));
     stopStanje = new Stanje(290, -280, QString("Stop"));
 
-    readyRunTranzicija = new Tranzicija(-100, 20, 210, 0);
-    runReadyTranzicija = new Tranzicija(-110, 30, 210, 180);
+    //readyRunTranzicija = new Tranzicija(-100, 15, 210, 0);
+    readyRunTranzicija = new Tranzicija(0, 0, 210, 0);
+    runReadyTranzicija = new Tranzicija(-110, 25, 210, 180);
     startReadyTranzicija = new Tranzicija(-350, 100, 150, 45);
     waitReadyTranzicija = new Tranzicija(-80, -140, 140, 225);
-    runWaitTranzicija = new Tranzicija(-50, -135, 140, 135);
-    runStopTranzicija = new Tranzicija(195, 110, 150, 315);
+    runWaitTranzicija = new Tranzicija(-80, -150, 150, 135);
+    runStopTranzicija = new Tranzicija(185, 110, 150, 315);
 }
 
 // funkcija crta elemente na QGraphicsView
@@ -75,79 +76,70 @@ void Dialog::on_unistiProces_clicked(){
     }
 }
 
-//void Dialog::konektujSignale() {
-//    connect(readyRunTranzicija, SIGNAL(onClick()),this,SLOT(readyRunClicked()));
-//    connect(runReadyTranzicija, SIGNAL(onClick()),this,SLOT(runReadyClicked()));
-//    connect(startReadyTranzicija, SIGNAL(onClick()),this,SLOT(startReadyClicked()));
-//    connect(waitReadyTransition, SIGNAL(onClick()),this,SLOT(waitReadyClicked()));
-//    connect(runWaitTransition, SIGNAL(onClick()),this,SLOT(runWaitClicked()));
-//    connect(runStopTransition, SIGNAL(onClick()),this,SLOT(runStopClicked()));
+// omogućava izvrsavanje custom funkcija na zadati signal (onClick)
+void Dialog::konektujSignale() {
+     connect(startReadyTranzicija,SIGNAL(onClick()),this,SLOT(pomjeriProces()));
+     connect(  readyRunTranzicija,SIGNAL(onClick()),this,SLOT(pomjeriProces()));
+     connect(   runStopTranzicija,SIGNAL(onClick()),this,SLOT(pomjeriProces()));
+     connect(  runReadyTranzicija,SIGNAL(onClick()),this,SLOT(pomjeriProces()));
+     connect(   runWaitTranzicija,SIGNAL(onClick()),this,SLOT(pomjeriProces()));
+     connect( waitReadyTranzicija,SIGNAL(onClick()),this,SLOT(pomjeriProces()));
 
-//    connect(readyRunTranzicija->timer, SIGNAL(timeout()),this,SLOT(pomjeriProcesReadyRun()));
-//    connect(runReadyTranzicija->timer, SIGNAL(timeout()),this,SLOT(pomjeriProcesRunReady()));
-//    connect(startReadyTranzicija->timer, SIGNAL(timeout()),this,SLOT(pomjeriProcesStartReady()));
-//    connect(waitReadyTransition->timer, SIGNAL(timeout()),this,SLOT(pomjeriProcesWaitReady()));
-//    connect(runWaitTransition->timer, SIGNAL(timeout()),this,SLOT(pomjeriProcesRunWait()));
-//    connect(runStopTransition->timer, SIGNAL(timeout()),this,SLOT(pomjeriProcesRunStop()));
-//}
+}
 
-//bool Dialog::provjeriErrore(Tranzicija *tranzicija, Stanje *izStanja, Stanje *doStanja){
-//    return tranzicija->timer->isActive() || izStanja->brojProcesa == 0 || doStanja->brojProcesa == 5;
-//}
+// provjera da li se procesi mogu prebaciti iz odgovarajucih stanja
+bool Dialog::provjeriErrore(Stanje *izStanja, Stanje *doStanja){
+    return izStanja->brojProcesa == 0 || doStanja->brojProcesa == 5;
+}
 
-//void Dialog::startReadyClicked(){
-//    startReadyTranzicija->tempY -= 280;
-//    startReadyTranzicija->tempX += 50;
-//    startReadyTranzicija->timer->start(50);
-//}
+// funkcija koja prebacuje procese iz jednog stanja u drugo na klik strelice
+void Dialog::pomjeriProces(){
+    if(sender()==startReadyTranzicija){
+        if(!provjeriErrore(startStanje,readyStanje)){
+            startStanje->brojProcesa--;
+            readyStanje->brojProcesa++;
 
-//void Dialog::readyRunClicked(){
-//    if(!provjeriErrore(readyRunTranzicija, readyStanje, runStanje)){
-//            readyRunTranzicija->timer->start(50);
-//       }
-//}
+            ui->graphicsView->viewport()->repaint();
+        }
+    }
+    if(sender()==readyRunTranzicija){
+        if(!provjeriErrore(readyStanje,runStanje)){
+            readyStanje->brojProcesa--;
+            runStanje->brojProcesa++;
 
+            ui->graphicsView->viewport()->repaint();
+        }
+    }
+    if(sender()==runStopTranzicija){
+        if(!provjeriErrore(runStanje,stopStanje)){
+            runStanje->brojProcesa--;
+            stopStanje->brojProcesa++;
 
-//void Dialog::pomjeriProcesStartReady(){
-//    if(startReadyTranzicija->tempY > -100){
-//        scene->addEllipse(startReadyTranzicija->tempX-10, startReadyTranzicija->tempY+10,10,10,QPen(Qt::blue),QBrush(Qt::blue));
-//        startReadyTranzicija->tempX = startReadyTranzicija->koordinataX;
-//        startReadyTranzicija->tempY = startReadyTranzicija->koordinataY;
+            ui->graphicsView->viewport()->repaint();
+        }
+    }
+    if(sender()==runReadyTranzicija){
+        if(!provjeriErrore(runStanje,readyStanje)){
+            runStanje->brojProcesa--;
+            readyStanje->brojProcesa++;
 
-//        startStanje->brojProcesa--;
-//        readyStanje->brojProcesa++;
+            ui->graphicsView->viewport()->repaint();
+        }
+    }
+    if(sender()==runWaitTranzicija){
+        if(!provjeriErrore(runStanje,waitStanje)){
+            runStanje->brojProcesa--;
+            waitStanje->brojProcesa++;
 
-//        ui->graphicsView->viewport()->repaint();
+            ui->graphicsView->viewport()->repaint();
+        }
+    }
+    if(sender()==waitReadyTranzicija){
+        if(!provjeriErrore(waitStanje,readyStanje)){
+            waitStanje->brojProcesa--;
+            readyStanje->brojProcesa++;
 
-//        startReadyTranzicija->timer->stop();
-//        return;
-//    }else{
-//        scene->addEllipse(startReadyTranzicija->tempX-10,startReadyTranzicija->tempY+10,10,10,QPen(Qt::blue),QBrush(Qt::blue));
-//        scene->addEllipse(startReadyTranzicija->tempX,startReadyTranzicija->tempY+20,10,10,QPen(Qt::red),QBrush(Qt::red));
-
-//        startReadyTranzicija->tempX+=10;
-//        startReadyTranzicija->tempY+=10;
-
-//        ui->graphicsView->viewport()->repaint();
-//        return;
-//    }
-//}
-
-//void Dialog::pomjeriProcesReadyRun(){
-//    if(readyRunTranzicija->tempX-readyRunTranzicija->koordinataX > 160) {
-//       scene->addEllipse(readyRunTranzicija->tempX-10,readyRunTranzicija->tempY+20,10,10,QPen(Qt::blue),QBrush(Qt::blue));
-//       readyRunTranzicija->tempX = readyRunTranzicija->koordinataX;
-//       readyRunTranzicija->tempY = readyRunTranzicija->koordinataY;
-
-//       readyStanje->brojProcesa--;
-//       runStanje->brojProcesa++;
-
-//       ui->graphicsView->viewport()->repaint();
-//       readyRunTranzicija->timer->stop();
-//       return;
-//   }
-//   scene->addEllipse(readyRunTranzicija->tempX-10,readyRunTranzicija->tempY+20,10,10,QPen(Qt::blue),QBrush(Qt::blue));
-//   scene->addEllipse(readyRunTranzicija->tempX,readyRunTranzicija->tempY+20,10,10,QPen(Qt::red),QBrush(Qt::red));
-//   readyRunTranzicija->tempX+=10;
-//   ui->graphicsView->viewport()->repaint();
-//}
+            ui->graphicsView->viewport()->repaint();
+        }
+    }
+}
