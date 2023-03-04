@@ -37,8 +37,7 @@ void Dialog::inicijalizirajElemente() {
     runStanje = new Stanje(120, -65, QString("Run"));
     stopStanje = new Stanje(290, -280, QString("Stop"));
 
-    //readyRunTranzicija = new Tranzicija(-100, 15, 210, 0);
-    readyRunTranzicija = new Tranzicija(0, 0, 210, 0);
+    readyRunTranzicija = new Tranzicija(-100, 15, 210, 0);
     runReadyTranzicija = new Tranzicija(-110, 25, 210, 180);
     startReadyTranzicija = new Tranzicija(-350, 100, 150, 45);
     waitReadyTranzicija = new Tranzicija(-80, -140, 140, 225);

@@ -20,7 +20,6 @@ public:
     QRectF boundingRect() const;
     // broj procesa koji su inicijalizirani unutar stanja
     int brojProcesa;
-    //void pomjeriProces();
 
 private:
     int koordinataX;

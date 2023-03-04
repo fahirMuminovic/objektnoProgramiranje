@@ -9,7 +9,7 @@ Stanje::Stanje(int x, int y, QString naslovStanja){
 
 void Stanje::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget){
     // koordinate za iscrtavanje ruba elementa koje uzimamo iz boundingRect() funkcije
-    QRectF koordinateRuba = boundingRect() ;
+    QRectF koordinateRuba = boundingRect();
     // boje koje se koriste za element
     QBrush zutaBoja(Qt::yellow);
     QBrush sivaBoja(Qt::gray);
