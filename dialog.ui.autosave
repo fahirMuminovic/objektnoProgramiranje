@@ -303,93 +303,234 @@
         <item>
          <layout class="QHBoxLayout" name="dolazakUSistemUCiklusuLayout">
           <item>
-           <widget class="QSpinBox" name="dolazak_u_ciklusu_1"/>
+           <widget class="QSpinBox" name="dolazak_u_ciklusu_1">
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>20</number>
+            </property>
+            <property name="value">
+             <number>0</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="dolazak_u_ciklusu_2"/>
+           <widget class="QSpinBox" name="dolazak_u_ciklusu_2">
+            <property name="maximum">
+             <number>20</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="dolazak_u_ciklusu_3"/>
+           <widget class="QSpinBox" name="dolazak_u_ciklusu_3">
+            <property name="maximum">
+             <number>20</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="dolazak_u_ciklusu_4"/>
+           <widget class="QSpinBox" name="dolazak_u_ciklusu_4">
+            <property name="maximum">
+             <number>20</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="dolazak_u_ciklusu_5"/>
+           <widget class="QSpinBox" name="dolazak_u_ciklusu_5">
+            <property name="maximum">
+             <number>20</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="dolazak_u_ciklusu_6"/>
+           <widget class="QSpinBox" name="dolazak_u_ciklusu_6">
+            <property name="maximum">
+             <number>20</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="dolazak_u_ciklusu_7"/>
+           <widget class="QSpinBox" name="dolazak_u_ciklusu_7">
+            <property name="maximum">
+             <number>20</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="dolazak_u_ciklusu_8"/>
+           <widget class="QSpinBox" name="dolazak_u_ciklusu_8">
+            <property name="maximum">
+             <number>20</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="dolazak_u_ciklusu_9"/>
+           <widget class="QSpinBox" name="dolazak_u_ciklusu_9">
+            <property name="maximum">
+             <number>20</number>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
         <item>
          <layout class="QHBoxLayout" name="brojCiklusaTrajanjaLayout">
           <item>
-           <widget class="QSpinBox" name="broj_ciklusa_trajanja_1"/>
+           <widget class="QSpinBox" name="broj_ciklusa_trajanja_1">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>30</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="broj_ciklusa_trajanja_2"/>
+           <widget class="QSpinBox" name="broj_ciklusa_trajanja_2">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>30</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="broj_ciklusa_trajanja_3"/>
+           <widget class="QSpinBox" name="broj_ciklusa_trajanja_3">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>30</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="broj_ciklusa_trajanja_4"/>
+           <widget class="QSpinBox" name="broj_ciklusa_trajanja_4">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>30</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="broj_ciklusa_trajanja_5"/>
+           <widget class="QSpinBox" name="broj_ciklusa_trajanja_5">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>30</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="broj_ciklusa_trajanja_6"/>
+           <widget class="QSpinBox" name="broj_ciklusa_trajanja_6">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>30</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="broj_ciklusa_trajanja_7"/>
+           <widget class="QSpinBox" name="broj_ciklusa_trajanja_7">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>30</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="broj_ciklusa_trajanja_8"/>
+           <widget class="QSpinBox" name="broj_ciklusa_trajanja_8">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>30</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="broj_ciklusa_trajanja_9"/>
+           <widget class="QSpinBox" name="broj_ciklusa_trajanja_9">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>30</number>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
         <item>
          <layout class="QHBoxLayout" name="prioritetLayout">
           <item>
-           <widget class="QSpinBox" name="prioritet_1"/>
+           <widget class="QSpinBox" name="prioritet_1">
+            <property name="maximum">
+             <number>9</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="prioritet_2"/>
+           <widget class="QSpinBox" name="prioritet_2">
+            <property name="maximum">
+             <number>9</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="prioritet_3"/>
+           <widget class="QSpinBox" name="prioritet_3">
+            <property name="maximum">
+             <number>9</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="prioritet_4"/>
+           <widget class="QSpinBox" name="prioritet_4">
+            <property name="maximum">
+             <number>9</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="prioritet_5"/>
+           <widget class="QSpinBox" name="prioritet_5">
+            <property name="maximum">
+             <number>9</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="prioritet_6"/>
+           <widget class="QSpinBox" name="prioritet_6">
+            <property name="maximum">
+             <number>9</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="prioritet_7"/>
+           <widget class="QSpinBox" name="prioritet_7">
+            <property name="maximum">
+             <number>9</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="prioritet_8"/>
+           <widget class="QSpinBox" name="prioritet_8">
+            <property name="maximum">
+             <number>9</number>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="prioritet_9"/>
+           <widget class="QSpinBox" name="prioritet_9">
+            <property name="maximum">
+             <number>9</number>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
