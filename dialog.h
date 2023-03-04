@@ -25,11 +25,16 @@ public:
 private:
     Ui::Dialog *ui;
     QGraphicsScene *scene;
+
+    void nacrtajScenu();
+
     QSpinBox *dolazakUCiklusu[9];
     QSpinBox *trajanjeCiklusa[9];
     QSpinBox *prioritetCiklusa[9];
     QLabel *procesiLabel[9];
 
+    QString trenutnoOdabraniAlgoritam;
+    int brojProcesa;
 };
 
 #endif // DIALOG_H
