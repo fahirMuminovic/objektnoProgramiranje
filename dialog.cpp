@@ -9,6 +9,7 @@ Dialog::Dialog(QWidget *parent) :
     brojProcesa = 9;
     trenutnoOdabraniAlgoritam = QString("FCFS");
 
+    postaviUiElementeUNizove();
     nacrtajScenu();
 }
 
@@ -47,3 +48,64 @@ void Dialog::nacrtajScenu(){
     textBrojCiklusa->setDefaultTextColor(Qt::blue);
 }
 
+
+void Dialog::on_broj_procesa_comboBox_currentIndexChanged(const QString &odabraniBrojProcesa)
+{
+    brojProcesa = odabraniBrojProcesa.toInt();
+
+    for(int i = 0; i < 9; i++){
+        if(i < brojProcesa){
+            dolazakUCiklusu[i]->setVisible(true);
+            trajanjeCiklusa[i]->setVisible(true);
+            prioritetCiklusa[i]->setVisible(true);
+            procesiLabel[i]->setVisible(true);
+        }else{
+            dolazakUCiklusu[i]->setVisible(false);
+            trajanjeCiklusa[i]->setVisible(false);
+            prioritetCiklusa[i]->setVisible(false);
+            procesiLabel[i]->setVisible(false);
+        }
+    }
+}
+
+void Dialog::postaviUiElementeUNizove(){
+    dolazakUCiklusu[0] = ui->dolazak_u_ciklusu_1;
+    dolazakUCiklusu[1] = ui->dolazak_u_ciklusu_2;
+    dolazakUCiklusu[2] = ui->dolazak_u_ciklusu_3;
+    dolazakUCiklusu[3] = ui->dolazak_u_ciklusu_4;
+    dolazakUCiklusu[4] = ui->dolazak_u_ciklusu_5;
+    dolazakUCiklusu[5] = ui->dolazak_u_ciklusu_6;
+    dolazakUCiklusu[6] = ui->dolazak_u_ciklusu_7;
+    dolazakUCiklusu[7] = ui->dolazak_u_ciklusu_8;
+    dolazakUCiklusu[8] = ui->dolazak_u_ciklusu_9;
+
+    trajanjeCiklusa[0] = ui->broj_ciklusa_trajanja_1;
+    trajanjeCiklusa[1] = ui->broj_ciklusa_trajanja_2;
+    trajanjeCiklusa[2] = ui->broj_ciklusa_trajanja_3;
+    trajanjeCiklusa[3] = ui->broj_ciklusa_trajanja_4;
+    trajanjeCiklusa[4] = ui->broj_ciklusa_trajanja_5;
+    trajanjeCiklusa[5] = ui->broj_ciklusa_trajanja_6;
+    trajanjeCiklusa[6] = ui->broj_ciklusa_trajanja_7;
+    trajanjeCiklusa[7] = ui->broj_ciklusa_trajanja_8;
+    trajanjeCiklusa[8] = ui->broj_ciklusa_trajanja_9;
+
+    prioritetCiklusa[0] = ui->prioritet_1;
+    prioritetCiklusa[1] = ui->prioritet_2;
+    prioritetCiklusa[2] = ui->prioritet_3;
+    prioritetCiklusa[3] = ui->prioritet_4;
+    prioritetCiklusa[4] = ui->prioritet_5;
+    prioritetCiklusa[5] = ui->prioritet_6;
+    prioritetCiklusa[6] = ui->prioritet_7;
+    prioritetCiklusa[7] = ui->prioritet_8;
+    prioritetCiklusa[8] = ui->prioritet_9;
+
+    procesiLabel[0] = ui->P1;
+    procesiLabel[1] = ui->P2;
+    procesiLabel[2] = ui->P3;
+    procesiLabel[3] = ui->P4;
+    procesiLabel[4] = ui->P5;
+    procesiLabel[5] = ui->P6;
+    procesiLabel[6] = ui->P7;
+    procesiLabel[7] = ui->P8;
+    procesiLabel[8] = ui->P9;
+}

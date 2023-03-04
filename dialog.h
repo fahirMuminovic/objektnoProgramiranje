@@ -22,10 +22,14 @@ public:
     explicit Dialog(QWidget *parent = 0);
     ~Dialog();
 
+private slots:
+    void on_broj_procesa_comboBox_currentIndexChanged(const QString &broj);
+
 private:
     Ui::Dialog *ui;
     QGraphicsScene *scene;
 
+    void postaviUiElementeUNizove();
     void nacrtajScenu();
 
     QSpinBox *dolazakUCiklusu[9];
