@@ -1,5 +1,6 @@
 #include "dialog.h"
 #include "ui_dialog.h"
+#include <QDebug>
 
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
@@ -7,6 +8,8 @@ Dialog::Dialog(QWidget *parent) :
 {
     ui->setupUi(this);
     brojProcesa = 9;
+    visinaScene = 390;
+    duzinaScene = 650;
     trenutnoOdabraniAlgoritam = QString("FCFS");
 
     postaviUiElementeUNizove();
@@ -48,7 +51,7 @@ void Dialog::nacrtajScenu(){
     textBrojCiklusa->setDefaultTextColor(Qt::blue);
 }
 
-
+// funkcija mijenja UI u odnosu na korisnički odabrani broj procesa
 void Dialog::on_broj_procesa_comboBox_currentIndexChanged(const QString &odabraniBrojProcesa)
 {
     brojProcesa = odabraniBrojProcesa.toInt();
@@ -68,6 +71,7 @@ void Dialog::on_broj_procesa_comboBox_currentIndexChanged(const QString &odabran
     }
 }
 
+// funkcija postavalja ui elemente u odgovarajuce nizove zbog lakse obrade u kodu
 void Dialog::postaviUiElementeUNizove(){
     dolazakUCiklusu[0] = ui->dolazak_u_ciklusu_1;
     dolazakUCiklusu[1] = ui->dolazak_u_ciklusu_2;
@@ -109,3 +113,26 @@ void Dialog::postaviUiElementeUNizove(){
     procesiLabel[7] = ui->P8;
     procesiLabel[8] = ui->P9;
 }
+
+// funkcija koja dodaje text za odgovarajuću proces pored y ose u zavisnosti od korisnicki odredjenog broja procesa
+void Dialog::nacrtajProcesText(){
+    for(int i = 0; i < brojProcesa; i++){
+        QGraphicsTextItem *procesText = scene->addText(procesiLabel[i]->text(),QFont("Times New Roman", 10));
+        procesText->setPos(1,40+(visinaScene/brojProcesa)*i);
+        procesText->setDefaultTextColor(Qt::blue);
+    }
+}
+
+// akivira se kada korisnik klikne na dugme Nacrtaj Gantov Dijagram
+void Dialog::on_nacrtajDijagramBtn_clicked()
+{
+    // ocisti scenu od prethodnih elemenata
+    scene->clear();
+    nacrtajScenu();
+    // iscrtaj text za procese pored y ose
+    nacrtajProcesText();
+    // iscrtaj qrectiteme za procese na odgovarajucim koordinatama
+    // iscrtaj isprekidane linije na kraju svakog qrect itema paralelno sa y osom
+}
+
+

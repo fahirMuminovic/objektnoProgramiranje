@@ -25,11 +25,14 @@ public:
 private slots:
     void on_broj_procesa_comboBox_currentIndexChanged(const QString &broj);
 
+    void on_nacrtajDijagramBtn_clicked();
+
 private:
     Ui::Dialog *ui;
     QGraphicsScene *scene;
 
     void postaviUiElementeUNizove();
+    void nacrtajProcesText();
     void nacrtajScenu();
 
     QSpinBox *dolazakUCiklusu[9];
@@ -39,6 +42,8 @@ private:
 
     QString trenutnoOdabraniAlgoritam;
     int brojProcesa;
+    int visinaScene;
+    int duzinaScene;
 };
 
 #endif // DIALOG_H
