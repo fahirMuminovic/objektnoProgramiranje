@@ -15,7 +15,6 @@ Ne dozvoliti kreiranje procesa ako već postoji 5 procesa u redu čekanja u stan
 
 Pritiskom na **QPushButton** *Uništi proces* ukloniti proces sa scene ako postoji u redu čekanja stanja **Stop**. **(2 boda)**
 
-![Zadaca](Aspose.Words.754da2c3-b602-4467-85a1-b62b7dfa99f7.001.jpeg)
 
 **Klasa Stanje (10 bodova)**
 
