@@ -10,15 +10,15 @@ Dialog::Dialog(QWidget *parent) :
     // kreiranje scene
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
-    ui->graphicsView->setAlignment(Qt::AlignTop|Qt::AlignLeft);
+    //ui->graphicsView->setAlignment(Qt::AlignTop|Qt::AlignLeft);
     // podešavanje veličine scene
     scene->setSceneRect(0,0,800,600);
     // poboljšava kvalitet rendera
     ui->graphicsView->setRenderHint(QPainter::Antialiasing,QPainter::SmoothPixmapTransform);
     // ukloni horizontalni scroll bar
-    ui->graphicsView->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff);
+   // ui->graphicsView->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff);
     // ukloni vertikalni scroll bar
-    ui->graphicsView->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff);
+   // ui->graphicsView->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff);
     // oboji pozadinu scene u plavu boju
     ui->graphicsView->setBackgroundBrush(QBrush(Qt::blue));
     // konstruktuj elemente

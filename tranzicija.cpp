@@ -47,22 +47,28 @@ void Tranzicija::paint(QPainter * painter, const QStyleOptionGraphicsItem * opti
 // funkcija koja definira granice elementa
 QRectF Tranzicija::boundingRect() const{
     if(rotacija == 0){
+        //ready run
         return QRectF(260, 315, 285, 30);
     }
-    if(rotacija == 180){
+    else if(rotacija == 180){
+        // run ready
         return QRectF(255, 265, 285, 30);
     }
-    if(rotacija == 53){
-        return QRectF(65, 120, 150, 250);
+    else if(rotacija == 53){
+        // start ready
+        return QRectF(65, 120, 105, 135);
     }
-    if(rotacija == 307){
-        return QRectF(630, 120, 140, 160);
+    else if(rotacija == 307){
+        // run stop
+        return QRectF(632, 125, 112, 138);
     }
-    if(rotacija == 135){
-        return QRectF(400, 325, 200, 180);
+    else if(rotacija == 135){
+        // run wait
+        return QRectF(435, 348, 145, 142);
     }
-    if(rotacija == 225){
-        return QRectF(200, 325, 160, 165);
+    else {
+        // wait ready
+        return QRectF(218, 353, 142, 140);
     }
 }
 
