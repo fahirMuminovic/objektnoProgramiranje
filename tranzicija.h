@@ -23,6 +23,7 @@ public:
     void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget  * widget);
     QRectF boundingRect() const;
 
+
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
@@ -36,7 +37,6 @@ public:
     int tempX;
     int tempY;
     int rotacija;
-    QTimer *timer;
 };
 
 #endif // TRANZICIJA_H
