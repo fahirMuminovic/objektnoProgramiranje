@@ -10,68 +10,24 @@ Dialog::Dialog(QWidget *parent) :
     visinaScene = 390.00;
     duzinaScene = 650.00;
 
-    initializeBrojProcesa();
+    inicijalizirajBrojProcesa();
     postaviUIElementeUNizove();
     podesiUIElemente();
     nacrtajScenu();
 }
 // postavlja broj procesa na vrijednost iz comboBoxa "broj_procesa" koje je korisnik odabrao
-void Dialog::initializeBrojProcesa(){
+void Dialog::inicijalizirajBrojProcesa(){
     brojProcesa = ui->broj_procesa_comboBox->currentText().toInt();
 }
 
-// crta početnu scenu kada se pokrene program
-void Dialog::nacrtajScenu(){
-    scene = new QGraphicsScene(this);
-    ui->graphicsView->setScene(scene);
-    ui->graphicsView->setAlignment(Qt::AlignTop|Qt::AlignLeft);
-    ui->graphicsView->setRenderHints(QPainter::Antialiasing|QPainter::SmoothPixmapTransform);
-
-    scene->setSceneRect(0,0,750,450);
-
-    QPen koordinatneOsePen;
-    koordinatneOsePen.setColor(Qt::blue);
-    koordinatneOsePen.setWidth(2);
-
-    // y-osa
-    scene->addLine(20,0,20,460,koordinatneOsePen);
-    scene->addLine(10,20,20,0,koordinatneOsePen); // strelica lijeva
-    scene->addLine(20,0,30,20,koordinatneOsePen); // strelica desna
-
-    // x-osa
-    scene->addLine(0,440,780,440,koordinatneOsePen);
-    scene->addLine(760,430,780,440,koordinatneOsePen);  //strelica gornja
-    scene->addLine(760,450,780,440,koordinatneOsePen);  //strelica donja
-
-    // text na y-osi
-    QGraphicsTextItem *textProcesi = scene->addText(QString("Procesi"),QFont("Times New Roman", 14));
-    textProcesi->setPos(35,-1);
-    textProcesi->setDefaultTextColor(Qt::blue);
-
-    // text na x-osi
-    QGraphicsTextItem *textBrojCiklusa = scene->addText(QString("Broj Ciklusa"),QFont("Times New Roman", 14));
-    textBrojCiklusa->setPos(650,438);
-    textBrojCiklusa->setDefaultTextColor(Qt::blue);
-}
-
-// funkcija mijenja UI u odnosu na korisnički odabrani broj procesa
-void Dialog::on_broj_procesa_comboBox_currentIndexChanged(const QString &odabraniBrojProcesa)
-{
-    brojProcesa = odabraniBrojProcesa.toInt();
-
+// funkcija prikazuje ili sakriva UI elemente prilikom prvog loadovanja programa
+void Dialog::podesiUIElemente(){
     for(int i = 0; i < 9; i++){
-        if(i < brojProcesa){
-            dolazakUCiklusu[i]->setVisible(true);
-            trajanjeCiklusa[i]->setVisible(true);
-            prioritetCiklusa[i]->setVisible(true);
-            procesiLabel[i]->setVisible(true);
-        }else{
-            dolazakUCiklusu[i]->setVisible(false);
-            trajanjeCiklusa[i]->setVisible(false);
-            prioritetCiklusa[i]->setVisible(false);
-            procesiLabel[i]->setVisible(false);
-        }
+        prioritetCiklusa[i]->setEnabled(false);
     }
+    ui->sa_pretpraznjenjem_radioButton->setEnabled(false);
+    ui->sa_pretpraznjenjem_radioButton->setChecked(false);
+    ui->sa_pretpraznjenjem_label->setEnabled(false);
 }
 
 // funkcija postavalja ui elemente u odgovarajuce nizove zbog lakse obrade u kodu
@@ -117,6 +73,57 @@ void Dialog::postaviUIElementeUNizove(){
     procesiLabel[8] = ui->P9;
 }
 
+// crta početnu scenu kada se pokrene program
+void Dialog::nacrtajScenu(){
+    scene = new QGraphicsScene(this);
+    ui->graphicsView->setScene(scene);
+    ui->graphicsView->setAlignment(Qt::AlignTop|Qt::AlignLeft);
+    ui->graphicsView->setRenderHints(QPainter::Antialiasing|QPainter::SmoothPixmapTransform);
+
+    scene->setSceneRect(0,0,750,450);
+
+    QPen koordinatneOsePen;
+    koordinatneOsePen.setColor(Qt::blue);
+    koordinatneOsePen.setWidth(2);
+
+    // y-osa
+    scene->addLine(20,0,20,460,koordinatneOsePen);
+    scene->addLine(10,20,20,0,koordinatneOsePen); // strelica lijeva
+    scene->addLine(20,0,30,20,koordinatneOsePen); // strelica desna
+
+    // x-osa
+    scene->addLine(0,440,780,440,koordinatneOsePen);
+    scene->addLine(760,430,780,440,koordinatneOsePen);  //strelica gornja
+    scene->addLine(760,450,780,440,koordinatneOsePen);  //strelica donja
+
+    // text na y-osi
+    QGraphicsTextItem *textProcesi = scene->addText(QString("Procesi"),QFont("Times New Roman", 14));
+    textProcesi->setPos(35,-1);
+    textProcesi->setDefaultTextColor(Qt::blue);
+
+    // text na x-osi
+    QGraphicsTextItem *textBrojCiklusa = scene->addText(QString("Broj Ciklusa"),QFont("Times New Roman", 14));
+    textBrojCiklusa->setPos(650,438);
+    textBrojCiklusa->setDefaultTextColor(Qt::blue);
+}
+
+// akivira se kada korisnik klikne na dugme Nacrtaj Gantov Dijagram
+void Dialog::on_nacrtajDijagramBtn_clicked()
+{
+    // ocisti scenu od prethodnih elemenata
+    scene->clear();
+    nacrtajScenu();
+
+    // sprema korisnicki odabrani broj procesa u varijablu brojProcesa
+    inicijalizirajBrojProcesa();
+    // inicijaliziraj niz "procesi"
+    napraviNizObjekataProces();
+    // iscrtaj text za procese pored y ose
+    nacrtajProcesText();
+    // iscrtaj QRectItem-e za procese na odgovarajucim koordinatama
+    nacrtajProcese();
+}
+
 // inicijalizira niz koji sadrži objekte proces
 void Dialog::napraviNizObjekataProces()
 {
@@ -124,19 +131,6 @@ void Dialog::napraviNizObjekataProces()
         procesi[i].trajanje = trajanjeCiklusa[i]->value();
         procesi[i].trenutakDolaska = dolazakUCiklusu[i]->value();
         procesi[i].redniBroj = i;
-    }
-}
-
-// sortira niz procesi po redoslijedu dolaska od elementa koji je dosao prvi do elementa koji je dosao posljednji
-void Dialog::sortirajProcesePoTrenutkuDolaska(){
-    for(int i = 0; i < brojProcesa; i++){
-        for(int j = i + 1; j < brojProcesa; j++){
-            if(procesi[j].trenutakDolaska < procesi[i].trenutakDolaska){
-                Proces temp = procesi[i];
-                procesi[i] = procesi[j];
-                procesi[j] = temp;
-            }
-        }
     }
 }
 
@@ -198,32 +192,39 @@ void Dialog::nacrtajProcese(){
     }
 }
 
-// akivira se kada korisnik klikne na dugme Nacrtaj Gantov Dijagram
-void Dialog::on_nacrtajDijagramBtn_clicked()
-{
-    // ocisti scenu od prethodnih elemenata
-    scene->clear();
-    nacrtajScenu();
-
-    // sprema korisnicki odabrani broj procesa u varijablu brojProcesa
-    initializeBrojProcesa();
-    // inicijaliziraj niz "procesi"
-    napraviNizObjekataProces();
-    // iscrtaj text za procese pored y ose
-    nacrtajProcesText();
-    // iscrtaj QRectItem-e za procese na odgovarajucim koordinatama
-    nacrtajProcese();
-}
-
-// funkcija prikazuje ili sakriva UI elemente prilikom prvog loadovanja programa
-void Dialog::podesiUIElemente(){
-    for(int i = 0; i < 9; i++){
-        prioritetCiklusa[i]->setEnabled(false);
+// sortira niz procesi po redoslijedu dolaska od elementa koji je dosao prvi do elementa koji je dosao posljednji
+void Dialog::sortirajProcesePoTrenutkuDolaska(){
+    for(int i = 0; i < brojProcesa; i++){
+        for(int j = i + 1; j < brojProcesa; j++){
+            if(procesi[j].trenutakDolaska < procesi[i].trenutakDolaska){
+                Proces temp = procesi[i];
+                procesi[i] = procesi[j];
+                procesi[j] = temp;
+            }
+        }
     }
-    ui->sa_pretpraznjenjem_radioButton->setEnabled(false);
-    ui->sa_pretpraznjenjem_radioButton->setChecked(false);
-    ui->sa_pretpraznjenjem_label->setEnabled(false);
 }
+
+// funkcija mijenja UI u odnosu na korisnički odabrani broj procesa
+void Dialog::on_broj_procesa_comboBox_currentIndexChanged(const QString &odabraniBrojProcesa)
+{
+    brojProcesa = odabraniBrojProcesa.toInt();
+
+    for(int i = 0; i < 9; i++){
+        if(i < brojProcesa){
+            dolazakUCiklusu[i]->setVisible(true);
+            trajanjeCiklusa[i]->setVisible(true);
+            prioritetCiklusa[i]->setVisible(true);
+            procesiLabel[i]->setVisible(true);
+        }else{
+            dolazakUCiklusu[i]->setVisible(false);
+            trajanjeCiklusa[i]->setVisible(false);
+            prioritetCiklusa[i]->setVisible(false);
+            procesiLabel[i]->setVisible(false);
+        }
+    }
+}
+
 // u zavisnosti od koriscki odabranog algoritma funckija prikazuje ili sakriva UI elemente
 void Dialog::on_algoritam_comboBox_currentTextChanged(const QString &odabraniAlgoritam)
 {
@@ -250,14 +251,14 @@ void Dialog::on_algoritam_comboBox_currentTextChanged(const QString &odabraniAlg
         ui->sa_pretpraznjenjem_label->setEnabled(false);
     }
     else if (odabraniAlgoritam == "SJF") {
-        ui->sa_pretpraznjenjem_radioButton->setAttribute(Qt::WA_TransparentForMouseEvents, false);  // omogućava klik na radio button
+        ui->sa_pretpraznjenjem_radioButton->setAttribute(Qt::WA_TransparentForMouseEvents, false);
 
         ui->sa_pretpraznjenjem_radioButton->setEnabled(true);
         ui->sa_pretpraznjenjem_radioButton->setChecked(false);
         ui->sa_pretpraznjenjem_label->setEnabled(true);
     }
     else if (odabraniAlgoritam == "RR") {
-        ui->sa_pretpraznjenjem_radioButton->setAttribute(Qt::WA_TransparentForMouseEvents, true);  // ignoriše klik na radio button
+        ui->sa_pretpraznjenjem_radioButton->setAttribute(Qt::WA_TransparentForMouseEvents, true);
 
         ui->sa_pretpraznjenjem_radioButton->setEnabled(true);
         ui->sa_pretpraznjenjem_radioButton->setChecked(true);

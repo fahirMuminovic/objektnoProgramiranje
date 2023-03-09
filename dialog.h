@@ -23,15 +23,10 @@ public:
     explicit Dialog(QWidget *parent = 0);
     ~Dialog();
 
-
 private slots:
     void on_broj_procesa_comboBox_currentIndexChanged(const QString &broj);
-
     void on_nacrtajDijagramBtn_clicked();
-
     void on_algoritam_comboBox_currentTextChanged(const QString &arg1);
-
-    void on_algoritam_comboBox_currentIndexChanged(const QString &arg1);
 
 private:
     Ui::Dialog *ui;
@@ -43,21 +38,19 @@ private:
     QLabel *procesiLabel[9];
     Proces procesi[9];
 
+    void nacrtajScenu();
+    void podesiUIElemente();
+    void inicijalizirajBrojProcesa();
     void postaviUIElementeUNizove();
     void nacrtajProcesText();
     void nacrtajProcese();
-    void nacrtajScenu();
-    void podesiUIElemente();
-    void initializeBrojProcesa();
 
-    void ukupnoTrajanjeProcesa();
     void napraviNizObjekataProces();
     void sortirajProcesePoTrenutkuDolaska();
 
     int brojProcesa;
     float visinaScene;
     float duzinaScene;
-
 };
 
 #endif // DIALOG_H
