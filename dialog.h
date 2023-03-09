@@ -9,6 +9,7 @@
 #include <QPen>
 #include <QString>
 #include <QBrush>
+#include "proces.h"
 
 namespace Ui {
 class Dialog;
@@ -22,28 +23,41 @@ public:
     explicit Dialog(QWidget *parent = 0);
     ~Dialog();
 
+
 private slots:
     void on_broj_procesa_comboBox_currentIndexChanged(const QString &broj);
 
     void on_nacrtajDijagramBtn_clicked();
 
+    void on_algoritam_comboBox_currentTextChanged(const QString &arg1);
+
+    void on_algoritam_comboBox_currentIndexChanged(const QString &arg1);
+
 private:
     Ui::Dialog *ui;
     QGraphicsScene *scene;
-
-    void postaviUiElementeUNizove();
-    void nacrtajProcesText();
-    void nacrtajScenu();
 
     QSpinBox *dolazakUCiklusu[9];
     QSpinBox *trajanjeCiklusa[9];
     QSpinBox *prioritetCiklusa[9];
     QLabel *procesiLabel[9];
+    Proces procesi[9];
 
-    QString trenutnoOdabraniAlgoritam;
+    void postaviUIElementeUNizove();
+    void nacrtajProcesText();
+    void nacrtajProcese();
+    void nacrtajScenu();
+    void podesiUIElemente();
+    void initializeBrojProcesa();
+
+    void ukupnoTrajanjeProcesa();
+    void napraviNizObjekataProces();
+    void sortirajProcesePoTrenutkuDolaska();
+
     int brojProcesa;
-    int visinaScene;
-    int duzinaScene;
+    float visinaScene;
+    float duzinaScene;
+
 };
 
 #endif // DIALOG_H
