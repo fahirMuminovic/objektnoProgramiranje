@@ -46,7 +46,7 @@ private:
     void inicijalizirajBrojProcesa();
     void postaviUIElementeUNizove();
     void nacrtajProcesText();
-    void nacrtajProcese();
+    void nacrtajProces();
     void nacrtajFCFS();
     void nacrtajSJF();
 

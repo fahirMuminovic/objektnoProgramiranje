@@ -18,12 +18,13 @@ Dialog::Dialog(QWidget *parent) :
     podesiUIElemente();
     nacrtajScenu();
 }
-// postavlja broj procesa na vrijednost iz comboBoxa "broj_procesa" koje je korisnik odabrao
+
+// pomocna funkcija postavlja broj procesa na vrijednost iz comboBoxa "broj_procesa" koje je korisnik odabrao
 void Dialog::inicijalizirajBrojProcesa(){
     brojProcesa = ui->broj_procesa_comboBox->currentText().toInt();
 }
 
-// funkcija prikazuje ili sakriva UI elemente prilikom prvog loadovanja programa
+// pomocna UI funkcija prikazuje ili sakriva UI elemente prilikom prvog loadovanja programa
 void Dialog::podesiUIElemente(){
     for(int i = 0; i < 9; i++){
         prioritetCiklusa[i]->setEnabled(false);
@@ -33,7 +34,7 @@ void Dialog::podesiUIElemente(){
     ui->sa_pretpraznjenjem_label->setEnabled(false);
 }
 
-// funkcija postavalja ui elemente u odgovarajuce nizove zbog lakse obrade u kodu
+// pomocna funkcija postavalja UI elemente u odgovarajuce nizove zbog lakse obrade u kodu
 void Dialog::postaviUIElementeUNizove(){
     dolazakUCiklusu[0] = ui->dolazak_u_ciklusu_1;
     dolazakUCiklusu[1] = ui->dolazak_u_ciklusu_2;
@@ -76,7 +77,7 @@ void Dialog::postaviUIElementeUNizove(){
     procesiLabel[8] = ui->P9;
 }
 
-// crta početnu scenu kada se pokrene program
+// UI funkcija koja crta pocetnu scenu kada se pokrene program
 void Dialog::nacrtajScenu(){
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
@@ -110,6 +111,7 @@ void Dialog::nacrtajScenu(){
     textBrojCiklusa->setDefaultTextColor(Qt::blue);
 }
 
+// glavna funkcija koja upravlja tokom programa
 // akivira se kada korisnik klikne na dugme Nacrtaj Gantov Dijagram
 void Dialog::on_nacrtajDijagramBtn_clicked()
 {
@@ -124,10 +126,10 @@ void Dialog::on_nacrtajDijagramBtn_clicked()
     // iscrtaj text za procese pored y ose
     nacrtajProcesText();
     // iscrtaj QRectItem-e za procese na odgovarajucim koordinatama
-    nacrtajProcese();
+    nacrtajProces();
 }
 
-// inicijalizira niz koji sadrži objekte proces
+// pomocna funkcija koja inicijalizira niz koji sadrži objekte proces
 void Dialog::napraviNizObjekataProces()
 {
     for(int i = 0; i < brojProcesa; i++) {
@@ -138,7 +140,7 @@ void Dialog::napraviNizObjekataProces()
     }
 }
 
-// funkcija koja dodaje text za odgovarajuću proces pored y ose u zavisnosti od korisnicki odredjenog broja procesa
+// UI funkcija koja dodaje text za odgovarajuću proces pored y ose u zavisnosti od korisnicki odredjenog broja procesa
 void Dialog::nacrtajProcesText(){
     float posX = 0;
     float posY = 0;
@@ -152,7 +154,8 @@ void Dialog::nacrtajProcesText(){
     }
 }
 
-void Dialog::nacrtajProcese(){
+// funkcija koja crta korisnicki odabrani algoritam tj. poziva fukncije koje crtaju odgovarajuce algoritme
+void Dialog::nacrtajProces(){
     int odabraniProces = ui->algoritam_comboBox->currentIndex();
 
     switch (odabraniProces) {
@@ -174,6 +177,7 @@ void Dialog::nacrtajProcese(){
     }
 }
 
+// funkcija koja crta FCFS algoritam
 void Dialog::nacrtajFCFS(){
     QPen okvirProcesa;
     okvirProcesa.setWidth(1);
@@ -222,6 +226,8 @@ void Dialog::nacrtajFCFS(){
         scene->addLine(koordinataX + duzina,0,koordinataX + duzina,440,isprekidanaLinija);
     }
 }
+
+// funkcija koja priprema niz procesa za SJF algoritam
 void Dialog::pripremiSJF(){
     // vrijednost ove varijable je zbir trajanja svih procesa
     int ukupnaDuzinaProcesa = 0;
@@ -237,19 +243,6 @@ void Dialog::pripremiSJF(){
 
     sortirajProcesePoTrajanju(procesiKopija);   // sortiraj kopirani niz po duzini trajanja procesa
 
-
-    //    for(int i = 0; i < brojProcesa; i++){
-    //        qDebug()<<"************************************";
-    //        qDebug()<<"i ->"<<i;
-    //        qDebug()<<"procesiKopija["<<i<<"].redniBroj = "<<procesiKopija[i].redniBroj;
-    //        qDebug()<<"procesiKopija["<<i<<"].trajanje = "<<procesiKopija[i].trajanje;
-    //        qDebug()<<"procesiKopija["<<i<<"].trenutakDolaska = "<<procesiKopija[i].trenutakDolaska;
-    //        qDebug()<<"procesiKopija["<<i<<"].preostaloVrijemeIzvrsavanja = "<<procesiKopija[i].preostaloVrijemeIzvrsavanja;
-    //        qDebug()<<"************************************";
-    //    }
-
-
-
     std::vector<Proces> redCekanja;
     redCekanja.clear(); // u slucaju da korisnik pokrece isti algoritam drugi put
     sjfProcesi.clear(); // u slucaju da korisnik pokrece isti algoritam drugi put
@@ -257,35 +250,15 @@ void Dialog::pripremiSJF(){
     // prvi sfj proces je onaj koji prvi dolazi
     sjfProcesi.push_back(procesi[0]);
 
-
-
     for(int ciklus = pocetakCiklusa(); ciklus < ukupnaDuzinaProcesa; ciklus++){
-        //        qDebug()<<"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&";
-        //        qDebug()<<"CIKLUS:"<<ciklus;
-        //        qDebug()<<"------------------------------------------------";
-        //        qDebug()<<"PRVOBITNO: sfjProcesi.back().preostaloVrijemeIzvrsavanja"<<sfjProcesi.back().preostaloVrijemeIzvrsavanja;
         if(sjfProcesi.back().preostaloVrijemeIzvrsavanja > 0){
             sjfProcesi.back().preostaloVrijemeIzvrsavanja -= 1;
         }
-        //        qDebug()<<"UMANJENO: sfjProcesi.back().preostaloVrijemeIzvrsavanja"<<sfjProcesi.back().preostaloVrijemeIzvrsavanja;
-        //        qDebug()<<"------------------------------------------------";
         // i je 1 zato sto kao prvi proces u SFJ bez pretpraznjenja uzimamo prvi proces koji dolazi bez obira na njegovo vrijeme izvrsavanja
         for(int i = 1; i < brojProcesa; i++){
-            if(procesiKopija[i].trenutakDolaska == ciklus && procesiKopija[i].preostaloVrijemeIzvrsavanja > 0){
-                //                qDebug()<<"#################################";
-                //                qDebug()<<"RED CEKANJA TRUE";
+            // ukoliko proces dolazi u ovom ciklusu dodaj ga u red cekanja
+            if(procesiKopija[i].trenutakDolaska == ciklus){
                 redCekanja.push_back(procesiKopija[i]);
-                //                int temp = 0;
-                //                for(auto procesUReduCekanja : redCekanja){
-                //                    qDebug()<<"i ->"<<temp;
-                //                    qDebug()<<"redCekanja["<<temp<<"].redniBroj = "<<procesUReduCekanja.redniBroj;
-                //                    qDebug()<<"redCekanja["<<temp<<"].trajanje = "<<procesUReduCekanja.trajanje;
-                //                    qDebug()<<"redCekanja["<<temp<<"].trenutakDolaska = "<<procesUReduCekanja.trenutakDolaska;
-                //                    qDebug()<<"redCekanja["<<temp<<"].preostaloVrijemeIzvrsavanja = "<<procesUReduCekanja.preostaloVrijemeIzvrsavanja;
-                //                    qDebug()<<"#################################";
-                //                    temp++;
-                //                }
-
             }
         }
 
@@ -293,47 +266,20 @@ void Dialog::pripremiSJF(){
             redCekanja = sortirajProcesePoTrajanjuVector(redCekanja);
         }
 
+        // ukoliko red cekanja ima elemente i proces koji se trenutno izvsava ima 0 preostalog vremena tj. gotov je sa izvrsavanjem
         if((!redCekanja.empty()) && sjfProcesi.back().preostaloVrijemeIzvrsavanja <= 0){
-            qDebug()<<"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
-            qDebug()<<"TRUE DODAJ PROCESE IZ REDA CEKANJA U SFJ PROCESE";
-
-
+            // ukoliko proces nije vec u redu cekanja
             if(nijeUSjfProcesi(sjfProcesi, redCekanja.front().redniBroj)){
-                sjfProcesi.push_back(redCekanja.front());   // kandidati se dodaju u sfjProcese
+                // dodaj prvi proces u redu cekanja u vektor koji sadrzi pravilno poredane sjf procese
+                sjfProcesi.push_back(redCekanja.front());
             };
-            int temp = 0;
-            for(auto procesUReduCekanja : redCekanja){
-                qDebug()<<"i ->"<<temp;
-                qDebug()<<"procesUReduCekanja["<<temp<<"].redniBroj = "<<procesUReduCekanja.redniBroj;
-                qDebug()<<"procesUReduCekanja["<<temp<<"].trajanje = "<<procesUReduCekanja.trajanje;
-                qDebug()<<"procesUReduCekanja["<<temp<<"].trenutakDolaska = "<<procesUReduCekanja.trenutakDolaska;
-                qDebug()<<"procesUReduCekanja["<<temp<<"].preostaloVrijemeIzvrsavanja = "<<procesUReduCekanja.preostaloVrijemeIzvrsavanja;
-                temp++;
-            }
+            // obrisi proces koji je ubacen u vektor iz reda cekanja
             redCekanja.erase(redCekanja.begin());
-            qDebug()<<"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
         }
-        //        qDebug()<<"KRAJ CIKLUSA:"<<ciklus;
-        //        qDebug()<<"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&";
     }
-
-
-
-    int temp = 0;
-    qDebug()<<"********SFJ*PROCESI********";
-    for(auto sfjProces : sjfProcesi){
-
-        qDebug()<<"i ->"<<temp;
-        qDebug()<<"sfjProces["<<temp<<"].redniBroj = "<<sfjProces.redniBroj;
-        qDebug()<<"sfjProces["<<temp<<"].trajanje = "<<sfjProces.trajanje;
-        qDebug()<<"sfjProces["<<temp<<"].trenutakDolaska = "<<sfjProces.trenutakDolaska;
-        qDebug()<<"sfjProces["<<temp<<"].preostaloVrijemeIzvrsavanja = "<<sfjProces.preostaloVrijemeIzvrsavanja;
-        temp++;
-
-    }
-    qDebug()<<"********SFJ*PROCESI********";
 }
 
+// pomocna funkcija koja provjerava da li je proces vec dodan u vektor
 bool Dialog::nijeUSjfProcesi(std::vector<Proces> procesi, int redniBroj){
     for(auto proces : procesi){
         if(proces.redniBroj == redniBroj){
@@ -343,6 +289,7 @@ bool Dialog::nijeUSjfProcesi(std::vector<Proces> procesi, int redniBroj){
     return true;
 }
 
+// funkcija koja crta SJF algoritam bez pretpraznjenja
 void Dialog::nacrtajSJF(){
     QPen okvirProcesa;
     okvirProcesa.setWidth(1);
@@ -356,7 +303,7 @@ void Dialog::nacrtajSJF(){
     QBrush bojaProcesa(Qt::green);
 
     // vrijednost ove varijable je zbir trajanja svih procesa
-    int ukupnaDuzinaProcesa = 0;
+    float ukupnaDuzinaProcesa = 0;
     for(int i = 0; i < brojProcesa; i++){
         ukupnaDuzinaProcesa += procesi[i].trajanje;
     }
@@ -364,13 +311,10 @@ void Dialog::nacrtajSJF(){
     float koordinataX = 0;
     float koordinataY = 0;
     float duzina = 0;
-    float visina = visinaScene/brojProcesa;     // visina kvadrata koji predstavlja proces
-    int dosadasnjaDuzina = 0;
+    float visina = visinaScene/brojProcesa; // visina kvadrata koji predstavlja proces
+    float dosadasnjaDuzina = 0;
 
-
-    //int i = 0;
     for(auto proces : sjfProcesi){
-        //i++;
         // 21 je potrebno odstojanje lijevog ruba scene
         koordinataX = 21 + dosadasnjaDuzina;
         // 40 je potrebno odstojanje od gornjeg ruba scene
@@ -384,12 +328,12 @@ void Dialog::nacrtajSJF(){
         scene->addRect(procesEl,okvirProcesa,bojaProcesa);
 
         // isprekidana linija nakon kvadrata koji predstavlja proces
-        //if(i == (sfjProcesi.size() - 1)) break; // ne želimo isprekidanu liniju nakon zadnjeg procesa
+        if(dosadasnjaDuzina == duzinaScene) break; // ne zelimo isprekidanu liniju nakon zadnjeg procesa
         scene->addLine(koordinataX + duzina,0,koordinataX + duzina,440,isprekidanaLinija);
     }
 }
 
-// funkcija vraca vrijednost koja predstavlja kada ciklusi pocinju
+// pomocna funkcija vraca vrijednost koja predstavlja kada ciklusi pocinju
 int Dialog::pocetakCiklusa(){
     int pocetakCiklusa = procesi[0].trenutakDolaska;
     for(int i = 0; i < brojProcesa; i++){
@@ -400,7 +344,7 @@ int Dialog::pocetakCiklusa(){
     return pocetakCiklusa;
 }
 
-// sortira niz po redoslijedu dolaska od elementa koji je dosao prvi do elementa koji je dosao posljednji
+// pomocna funkcija sortira niz po redoslijedu dolaska od elementa koji je dosao prvi do elementa koji je dosao posljednji
 void Dialog::sortirajProcesePoTrenutkuDolaska(Proces *niz){
     for(int i = 0; i < brojProcesa; i++){
         for(int j = i + 1; j < brojProcesa; j++){
@@ -412,7 +356,8 @@ void Dialog::sortirajProcesePoTrenutkuDolaska(Proces *niz){
         }
     }
 }
-// sortira niz po trajanju od najkraceg do najduzeg
+
+// pomocna funkcija sortira niz po trajanju od najkraceg do najduzeg
 void Dialog::sortirajProcesePoTrajanju(Proces *niz){
     int i;
     // provjera da li se radi o SFJ sa pretpraznjenjem ili bez
@@ -434,7 +379,8 @@ void Dialog::sortirajProcesePoTrajanju(Proces *niz){
         }
     }
 }
-// funkcija koja sortira elemente vektora po trajanju od najkraceg do najduzeg
+
+// pomocna funkcija koja sortira elemente vektora po trajanju od najkraceg do najduzeg
 std::vector<Proces> Dialog::sortirajProcesePoTrajanjuVector(std::vector<Proces> vector){
     std::sort(vector.begin(), vector.end(), [](const Proces& prethodnik, const Proces& sljedbenik) {
         return prethodnik.trajanje < sljedbenik.trajanje;
@@ -442,7 +388,7 @@ std::vector<Proces> Dialog::sortirajProcesePoTrajanjuVector(std::vector<Proces> 
     return vector;
 }
 
-// funkcija mijenja UI u odnosu na korisnički odabrani broj procesa
+// UI funkcija koja u zavisnosti od koriscki odabranog broja procesa prikazuje ili sakriva UI elemente
 void Dialog::on_broj_procesa_comboBox_currentIndexChanged(const QString &odabraniBrojProcesa)
 {
     brojProcesa = odabraniBrojProcesa.toInt();
@@ -462,7 +408,7 @@ void Dialog::on_broj_procesa_comboBox_currentIndexChanged(const QString &odabran
     }
 }
 
-// u zavisnosti od koriscki odabranog algoritma funckija prikazuje ili sakriva UI elemente
+// UI funkcija koja u zavisnosti od koriscki odabranog algoritma prikazuje ili sakriva UI elemente
 void Dialog::on_algoritam_comboBox_currentTextChanged(const QString &odabraniAlgoritam)
 {
     if(odabraniAlgoritam != "Prioritet"){
