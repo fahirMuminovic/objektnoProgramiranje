@@ -23,6 +23,8 @@ public:
     explicit Dialog(QWidget *parent = 0);
     ~Dialog();
 
+    int pocetakCiklusa();
+    bool nijeUSjfProcesi(std::vector<Proces> procesi, int redniBroj);
 private slots:
     void on_broj_procesa_comboBox_currentIndexChanged(const QString &broj);
     void on_nacrtajDijagramBtn_clicked();
@@ -37,6 +39,7 @@ private:
     QSpinBox *prioritetCiklusa[9];
     QLabel *procesiLabel[9];
     Proces procesi[9];
+    std::vector<Proces> sjfProcesi;
 
     void nacrtajScenu();
     void podesiUIElemente();
@@ -44,13 +47,19 @@ private:
     void postaviUIElementeUNizove();
     void nacrtajProcesText();
     void nacrtajProcese();
+    void nacrtajFCFS();
+    void nacrtajSJF();
 
     void napraviNizObjekataProces();
-    void sortirajProcesePoTrenutkuDolaska();
+    void sortirajProcesePoTrenutkuDolaska(Proces *niz);
+    void sortirajProcesePoTrajanju(Proces *niz);
+    std::vector<Proces> sortirajProcesePoTrajanjuVector(std::vector<Proces> vector);
+    void pripremiSJF();
 
     int brojProcesa;
     float visinaScene;
     float duzinaScene;
+
 };
 
 #endif // DIALOG_H

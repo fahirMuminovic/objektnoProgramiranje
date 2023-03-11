@@ -8,6 +8,7 @@ public:
     int trajanje;
     int trenutakDolaska;
     int redniBroj;
+    int preostaloVrijemeIzvrsavanja;
 };
 
 #endif // PROCES_H

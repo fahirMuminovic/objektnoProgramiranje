@@ -20,3 +20,5 @@ HEADERS  += dialog.h \
     proces.h
 
 FORMS    += dialog.ui
+
+CONFIG += c++11
