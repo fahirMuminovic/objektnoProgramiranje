@@ -25,6 +25,7 @@ public:
 
     int pocetakCiklusa();
     bool nijeUSjfProcesi(std::vector<Proces> procesi, int redniBroj);
+    bool postojiKraceVrijemeIzvrsavanja(std::vector<Proces> redCekanja, Proces trenutniProces);
 private slots:
     void on_broj_procesa_comboBox_currentIndexChanged(const QString &broj);
     void on_nacrtajDijagramBtn_clicked();
@@ -60,6 +61,7 @@ private:
     float visinaScene;
     float duzinaScene;
 
+    void pripremiSJFsaPretpaznjenjem();
 };
 
 #endif // DIALOG_H

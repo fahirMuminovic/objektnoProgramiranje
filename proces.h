@@ -9,6 +9,7 @@ public:
     int trenutakDolaska;
     int redniBroj;
     int preostaloVrijemeIzvrsavanja;
+    int burst = 0;
 };
 
 #endif // PROCES_H
