@@ -11,7 +11,7 @@ Dialog::Dialog(QWidget *parent) :
 {
     ui->setupUi(this);
     visinaScene = 390.00;
-    duzinaScene = 650.00;
+    duzinaScene = 730.00;
 
     inicijalizirajBrojProcesa();
     postaviUIElementeUNizove();
@@ -386,13 +386,12 @@ void Dialog::nacrtajSJF(){
         // kada je odabran SJF sa pretpraznjenjem
         if(ui->sa_pretpraznjenjem_radioButton->isChecked()){
             duzina = proces.burst * (duzinaScene / ukupnaDuzinaProcesa);
-            dosadasnjaDuzina += duzina;
         }else{
             // kada je odabran SJF bez pretpraznjenja
             duzina = proces.trajanje * (duzinaScene / ukupnaDuzinaProcesa);
-            dosadasnjaDuzina += duzina;
         }
-        qDebug()<<"dosadasnjaDuzina"<<dosadasnjaDuzina;
+
+        dosadasnjaDuzina += duzina;
 
         // kvadrat koji predstavlja proces
         QRectF procesEl(koordinataX,koordinataY,duzina,visina);
