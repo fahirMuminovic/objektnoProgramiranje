@@ -61,6 +61,8 @@ private:
     void pripremiSJF();
 
     void pripremiSJFsaPretpaznjenjem();
+    void pripremiRR();
+    void nacrtajRR();
 };
 
 #endif // DIALOG_H
