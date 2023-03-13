@@ -35,12 +35,15 @@ private:
     Ui::Dialog *ui;
     QGraphicsScene *scene;
 
+    int brojProcesa;
+    float const VISINA_SCENE = 390;
+    float const DUZINA_SCENE = 730;
     QSpinBox *dolazakUCiklusu[9];
     QSpinBox *trajanjeCiklusa[9];
     QSpinBox *prioritetCiklusa[9];
     QLabel *procesiLabel[9];
     Proces procesi[9];
-    std::vector<Proces> sjfProcesi;
+    std::vector<Proces> redIzvrsavanja;
 
     void nacrtajScenu();
     void podesiUIElemente();
@@ -56,10 +59,6 @@ private:
     void sortirajProcesePoTrajanju(Proces *niz);
     std::vector<Proces> sortirajProcesePoTrajanjuVector(std::vector<Proces> vector);
     void pripremiSJF();
-
-    int brojProcesa;
-    float visinaScene;
-    float duzinaScene;
 
     void pripremiSJFsaPretpaznjenjem();
 };
