@@ -43,7 +43,7 @@ private:
     QSpinBox *prioritetCiklusa[9];
     QLabel *procesiLabel[9];
     Proces procesi[9];
-    std::vector<Proces> redIzvrsavanja;
+    std::vector<Proces> redoslijedIzvrsavanja;
 
     void nacrtajScenu();
     void podesiUIElemente();
