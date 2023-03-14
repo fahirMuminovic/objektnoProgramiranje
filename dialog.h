@@ -40,7 +40,7 @@ private:
     float const DUZINA_SCENE = 730;
     QSpinBox *dolazakUCiklusu[9];
     QSpinBox *trajanjeCiklusa[9];
-    QSpinBox *prioritetCiklusa[9];
+    QSpinBox *prioritetProcesa[9];
     QLabel *procesiLabel[9];
     Proces procesi[9];
     std::vector<Proces> redoslijedIzvrsavanja;
@@ -52,7 +52,7 @@ private:
     void nacrtajProcesText();
     void nacrtajProces();
     void nacrtajFCFS();
-    void nacrtajSaPretpraznjenjem();
+    void nacrtajAlgoritam();
 
     void napraviNizObjekataProces();
     void sortirajProcesePoTrenutkuDolaska(Proces *niz);
@@ -63,6 +63,8 @@ private:
     void pripremiSJFsaPretpaznjenjem();
     void pripremiRR();
     void nacrtajRR();
+    void pripremiPrioritet();
+    std::vector<Proces> sortirajProcesePoPrioritetu(std::vector<Proces> vector);
 };
 
 #endif // DIALOG_H
