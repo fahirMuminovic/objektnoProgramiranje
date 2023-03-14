@@ -211,7 +211,7 @@ void Dialog::pripremiFCFS(){
     redCekanja.clear();
     redoslijedIzvrsavanja.clear();
 
-    for(int ciklus = pocetakCiklusa(); ciklus < ukupnaDuzinaProcesa; ciklus++){
+    for(int ciklus = pocetakCiklusa(); ciklus <= ukupnaDuzinaProcesa; ciklus++){
         for(int i = 0; i < brojProcesa; i++){
             if(procesi[i].trenutakDolaska == ciklus){
                 // ukoliko proces dolazi u ovom ciklusu dodaj ga u red cekanja
@@ -251,23 +251,24 @@ void Dialog::pripremiSJF(){
     redCekanja.clear(); // u slucaju da korisnik pokrece isti algoritam drugi put
     redoslijedIzvrsavanja.clear(); // u slucaju da korisnik pokrece isti algoritam drugi put
 
-    for(int ciklus = pocetakCiklusa(); ciklus < ukupnaDuzinaProcesa; ciklus++){
+    for(int ciklus = pocetakCiklusa(); ciklus <= ukupnaDuzinaProcesa; ciklus++){
         for(int i = 0; i < brojProcesa; i++){
             // ukoliko proces dolazi u ovom ciklusu dodaj ga u red cekanja
             if(procesiKopija[i].trenutakDolaska == ciklus){
                 redCekanja.push_back(procesiKopija[i]);
             }
-            // ukoliko je ovo prvi proces koji dolazi onda ga odma dodajemo u red izvrsavanja
-            if(!redCekanja.empty() && redoslijedIzvrsavanja.empty()){
-                redoslijedIzvrsavanja.push_back(redCekanja.front());
-                redCekanja.clear();
-            }
-        }
 
-        if(!redCekanja.empty()){
+        }
+        // ukoliko je vise procesa u redu cekanja sortiraj red cekanja po trajanju procesa
+        if(redCekanja.capacity() > 1){
             redCekanja = sortirajProcesePoTrajanjuVector(redCekanja);
         }
 
+        // ukoliko je ovo prvi i jedini proces koji dolazi onda ga odma dodajemo u red izvrsavanja
+        if(redoslijedIzvrsavanja.empty()){
+            redoslijedIzvrsavanja.push_back(redCekanja.front());
+            redCekanja.erase(redCekanja.begin()); // obrisi proces iz reda cekanja
+        }
         // ukoliko red cekanja ima procese i proces koji se trenutno izvsava ima 0 preostalog vremena tj. gotov je sa izvrsavanjem
         if((!redCekanja.empty()) && redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja <= 0){
             // ukoliko proces nije vec u redu cekanja
@@ -313,46 +314,50 @@ void Dialog::pripremiSJFsaPretpaznjenjem(){
                 redCekanja.push_back(procesiKopija[i]); // dodaj proces u red cekanja
             }
         }
-        // sortiraj red cekanja
-        if(!redCekanja.empty()){
+
+        // ukoliko je vise procesa u redu cekanja sortiraj red cekanja po trajanju procesa
+        if(redCekanja.capacity() > 1){
             redCekanja = sortirajProcesePoTrajanjuVector(redCekanja);
         }
 
-        // ukoliko postoje procesi u redu cekanja
-        if(!redCekanja.empty()){
-            // ukoliko je ovo prvi proces koji dolazi dodaj ga u red izvrsavanja bez obzira na vrijeme izvrsavanja i trajanje
-            if(redoslijedIzvrsavanja.empty()){
-                redoslijedIzvrsavanja.push_back(redCekanja.front());
-                redCekanja.clear(); // isprazni red cekanja
-            }else{
-                // ukoliko je trenutni proces zavrsio sa izvrsavanjem
-                if(redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja <= 0){
-                    sortirajProcesePoTrajanjuVector(redCekanja);    // sortiraj redCekanja tako da prvi proces ima najkrace vrijeme izrsavanja
+        // ukoliko je ovo prvi i jedini proces koji dolazi onda ga odma dodajemo u red izvrsavanja
+        if(redoslijedIzvrsavanja.empty()){
+            redoslijedIzvrsavanja.push_back(redCekanja.front());
+            redCekanja.erase(redCekanja.begin()); // obrisi proces iz reda cekanja
+        }
 
-                    redoslijedIzvrsavanja.push_back(redCekanja.front());   // pomjeri proces iz reda cekanja u sfjProcese
-                    redCekanja.erase(redCekanja.begin());   // obrisi dodani proces iz reda cekanja
+        // ukoliko postoje procesi u redu cekanja i postoje procesi u redoslijeduIzrsavanja
+        else if(!redCekanja.empty() && !redoslijedIzvrsavanja.empty()){
+
+            // ukoliko je trenutni proces zavrsio sa izvrsavanjem
+            if(redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja <= 0){
+                sortirajProcesePoTrajanjuVector(redCekanja);    // sortiraj redCekanja tako da prvi proces ima najkrace vrijeme izrsavanja
+
+                redoslijedIzvrsavanja.push_back(redCekanja.front());   // pomjeri proces iz reda cekanja u sfjProcese
+                redCekanja.erase(redCekanja.begin());   // obrisi dodani proces iz reda cekanja
+            }
+
+            // ukoliko jedan od procesa u redu cekanja ima krace vrijeme izvrsavanja od trenutnog procesa
+            else if(postojiKraceVrijemeIzvrsavanja(redCekanja, redoslijedIzvrsavanja.back())){
+
+                //  ukoliko proces koji se trenutno izvrsava nije gotov sa izvrsavanjem
+                if(redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja > 0){
+                    redCekanja.push_back(redoslijedIzvrsavanja.back());    // dodaj proces u red cekanja
+                    redCekanja.back().burst = 0; // resetuj burst time za proces koji je upravo dodan u red cekanja
                 }
-                // ukoliko jedan od procesa u redu cekanja ima krace vrijeme izvrsavanja od trenutnog procesa
-                else if(postojiKraceVrijemeIzvrsavanja(redCekanja, redoslijedIzvrsavanja.back())){
-                    // ukoliko proces nije vec u redu cekanja
-                    if(nijeUSjfProcesi(redoslijedIzvrsavanja, redCekanja.front().redniBroj)){
-                        //  ukoliko proces koji se trenutno izvrsava nije gotov sa izvrsavanjem
-                        if(redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja > 0){
-                            redCekanja.push_back(redoslijedIzvrsavanja.back());    // dodaj proces u red cekanja
-                        }
-                        // dodaj prvi proces u redu cekanja u red izvrsavanja
-                        redoslijedIzvrsavanja.push_back(redCekanja.front());
-                        // obrisi proces ubaceni proces iz reda cekanja
-                        redCekanja.erase(redCekanja.begin());
-                    }
-                }
+
+                // dodaj prvi proces u redu cekanja u red izvrsavanja
+                redoslijedIzvrsavanja.push_back(redCekanja.front());
+                // obrisi proces ubaceni proces iz reda cekanja
+                redCekanja.erase(redCekanja.begin());
             }
         }
+
         // smanji preostalo vrijeme izvrsavanja za trenutni proces
         if(redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja > 0){
             redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja -= 1;
+            redoslijedIzvrsavanja.back().burst += 1; // dodaj burst time
         }
-        redoslijedIzvrsavanja.back().burst += 1; // dodaj burst time
     }
 }
 
@@ -458,7 +463,7 @@ void Dialog::pripremiPrioritet(){
     redCekanja.clear(); // u slucaju da korisnik pokrece isti algoritam drugi put
     redoslijedIzvrsavanja.clear(); // u slucaju da korisnik pokrece isti algoritam drugi put
 
-    for(int ciklus = pocetakCiklusa(); ciklus < ukupnaDuzinaProcesa; ciklus++){
+    for(int ciklus = pocetakCiklusa(); ciklus <= ukupnaDuzinaProcesa; ciklus++){
         for(int i = 0; i < brojProcesa; i++){
             if(procesi[i].trenutakDolaska == ciklus){
                 //proces dolazi u ovom ciklusu dodaj ga u red cekanja
