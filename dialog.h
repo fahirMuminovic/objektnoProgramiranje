@@ -49,22 +49,23 @@ private:
     void podesiUIElemente();
     void inicijalizirajBrojProcesa();
     void postaviUIElementeUNizove();
+    void napraviNizObjekataProces();
     void nacrtajProcesText();
     void nacrtajProces();
-    void nacrtajFCFS();
+
+    void pripremiFCFS();
     void nacrtajAlgoritam();
-
-    void napraviNizObjekataProces();
-    void sortirajProcesePoTrenutkuDolaska(Proces *niz);
-    void sortirajProcesePoTrajanju(Proces *niz);
-    std::vector<Proces> sortirajProcesePoTrajanjuVector(std::vector<Proces> vector);
     void pripremiSJF();
-
     void pripremiSJFsaPretpaznjenjem();
     void pripremiRR();
-    void nacrtajRR();
     void pripremiPrioritet();
+
+    void sortirajProcesePoTrenutkuDolaska(Proces *niz);
+    void sortirajProcesePoTrajanju(Proces *niz);
+
+    std::vector<Proces> sortirajProcesePoTrajanjuVector(std::vector<Proces> vector);
     std::vector<Proces> sortirajProcesePoPrioritetu(std::vector<Proces> vector);
+    std::vector<Proces> sortirajProcesePoRednomBroju(std::vector<Proces> vector);
 };
 
 #endif // DIALOG_H
