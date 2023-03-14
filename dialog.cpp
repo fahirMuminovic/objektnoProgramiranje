@@ -519,15 +519,6 @@ void Dialog::pripremiPrioritet(){
 
     sortirajProcesePoTrenutkuDolaska(procesi);  // sortiraj prvobitni niz po trenutku dolaska procesa
 
-    qDebug()<<"----------------------------------------";
-    for(auto it : procesi){
-        qDebug()<<"Proces P"<<it.redniBroj+1;
-        qDebug()<<"proces.trenutakDolaska"<<it.trenutakDolaska;
-        qDebug()<<"proces.trajanje"<<it.trajanje;
-        qDebug()<<"proces.prioritet"<<it.prioritet;
-        qDebug()<<"proces.redniBroj"<<it.redniBroj;
-    }
-    qDebug()<<"----------------------------------------";
     std::vector<Proces> redCekanja;
     redCekanja.clear(); // u slucaju da korisnik pokrece isti algoritam drugi put
     redoslijedIzvrsavanja.clear(); // u slucaju da korisnik pokrece isti algoritam drugi put
@@ -544,16 +535,6 @@ void Dialog::pripremiPrioritet(){
         if(!redCekanja.empty()){
             redCekanja = sortirajProcesePoPrioritetu(redCekanja);
         }
-
-        qDebug()<<"********************************";
-        for(auto it : redCekanja){
-            qDebug()<<"Proces P"<<it.redniBroj+1;
-            qDebug()<<"proces.trenutakDolaska"<<it.trenutakDolaska;
-            qDebug()<<"proces.trajanje"<<it.trajanje;
-            qDebug()<<"proces.prioritet"<<it.prioritet;
-            qDebug()<<"proces.redniBroj"<<it.redniBroj;
-        }
-        qDebug()<<"********************************";
 
         // ukoliko je ovo prvi proces koji dolazi
         if(redoslijedIzvrsavanja.empty()){
@@ -575,15 +556,6 @@ void Dialog::pripremiPrioritet(){
             redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja -= 1;
         }
     }
-        qDebug()<<"********************************";
-        for(auto it : redoslijedIzvrsavanja){
-            qDebug()<<"Proces P"<<it.redniBroj+1;
-            qDebug()<<"proces.trenutakDolaska"<<it.trenutakDolaska;
-            qDebug()<<"proces.trajanje"<<it.trajanje;
-            qDebug()<<"proces.prioritet"<<it.prioritet;
-            qDebug()<<"proces.redniBroj"<<it.redniBroj;
-        }
-        qDebug()<<"********************************";
 }
 // pomocna funkcija koja sortira procese po prioritetu gdje manji broj oznacava veci prioritet
 std::vector<Proces> Dialog::sortirajProcesePoPrioritetu(std::vector<Proces> vector){
