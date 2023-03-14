@@ -52,7 +52,7 @@ private:
     void nacrtajProcesText();
     void nacrtajProces();
     void nacrtajFCFS();
-    void nacrtajSJF();
+    void nacrtajSaPretpraznjenjem();
 
     void napraviNizObjekataProces();
     void sortirajProcesePoTrenutkuDolaska(Proces *niz);

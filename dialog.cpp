@@ -165,11 +165,11 @@ void Dialog::nacrtajProces(){
             pripremiSJFsaPretpaznjenjem();
         }else pripremiSJF();
 
-        nacrtajSJF();
+        nacrtajSaPretpraznjenjem();
         break;
     case 2:
         pripremiRR();
-        nacrtajRR();
+        nacrtajSaPretpraznjenjem();
         break;
     case 3:
         // TODO:Prioritet
@@ -354,7 +354,7 @@ void Dialog::pripremiSJFsaPretpaznjenjem(){
 }
 
 // funkcija koja crta SJF algoritam
-void Dialog::nacrtajSJF(){
+void Dialog::nacrtajSaPretpraznjenjem(){
     QPen okvirProcesa;
     okvirProcesa.setWidth(1);
     okvirProcesa.setColor(Qt::blue);
@@ -499,50 +499,6 @@ void Dialog::pripremiRR(){
     } while(preostaloVrijemeIzvrsavanjaSvihProcesa > 0);
 }
 
-void Dialog::nacrtajRR(){
-    QPen okvirProcesa;
-    okvirProcesa.setWidth(1);
-    okvirProcesa.setColor(Qt::blue);
-
-    QPen isprekidanaLinija;
-    isprekidanaLinija.setWidth(1);
-    isprekidanaLinija.setColor(Qt::blue);
-    isprekidanaLinija.setStyle(Qt::DashLine);
-
-    QBrush bojaProcesa(Qt::green);
-
-    float koordinataX = 0;
-    float koordinataY = 0;
-    float duzina = 0;
-    float visina = VISINA_SCENE/brojProcesa; // visina kvadrata koji predstavlja proces
-    float dosadasnjaDuzina = 0;
-
-    // vrijednost ove varijable je zbir trajanja svih procesa
-    float ukupnaDuzinaProcesa = 0;
-    for(auto proces : redoslijedIzvrsavanja){
-        ukupnaDuzinaProcesa += proces.burst;
-    }
-
-    for(auto proces : redoslijedIzvrsavanja){
-        // 21 je potrebno odstojanje lijevog ruba scene
-        koordinataX = 21 + dosadasnjaDuzina;
-        // 40 je potrebno odstojanje od gornjeg ruba scene
-        koordinataY = 40 + visina * proces.redniBroj;
-
-        duzina = proces.burst * (DUZINA_SCENE / ukupnaDuzinaProcesa);
-
-        dosadasnjaDuzina += duzina;
-
-        // kvadrat koji predstavlja proces
-        QRectF procesEl(koordinataX,koordinataY,duzina,visina);
-        // dodaj proces na scenu
-        scene->addRect(procesEl,okvirProcesa,bojaProcesa);
-
-        // isprekidana linija nakon kvadrata koji predstavlja proces
-        if(dosadasnjaDuzina >= DUZINA_SCENE) break; // ne zelimo isprekidanu liniju nakon zadnjeg procesa
-        scene->addLine(koordinataX + duzina,0,koordinataX + duzina,440,isprekidanaLinija);
-    }
-}
 
 // pomocna funkcija koja provjerava da li jedan od procesa u redu cekanja ima krace vrijeme izvrsavanja od trenutnog procesa
 bool Dialog::postojiKraceVrijemeIzvrsavanja(std::vector<Proces> redCekanja, Proces trenutniProces){
