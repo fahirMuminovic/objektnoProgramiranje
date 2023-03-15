@@ -201,7 +201,10 @@ void Dialog::nacrtajProces()
         break;
 
     case 3: // Prioritet algoritam
-        pripremiPrioritet();
+        if (ui->sa_pretpraznjenjem_radioButton->isChecked())
+            pripremiPrioritetSaPretpraznjenjem();
+        else
+            pripremiPrioritet();
 
         nacrtajAlgoritam();
         break;
@@ -460,11 +463,6 @@ void Dialog::pripremiRR()
                 redoslijedIzvrsavanja.push_back(trenutniRedIzvrsavanja.front()); // dodaj upravo izvrseni proces u redoslijedIzvrsavanja
                 trenutniRedIzvrsavanja.erase(trenutniRedIzvrsavanja.begin());    // obrisi proces iz trenutnog reda izvrsavanja
 
-                //                // slucaj kada se proces u potpunosti izvrsi i nema sljedeceg procesa u redu cekanja
-                //                if(trenutniRedIzvrsavanja.front().preostaloVrijemeIzvrsavanja <= 0 && redCekanja.empty()) {
-                //                    break;
-                //                }else {
-
                 trenutniRedIzvrsavanja.insert(trenutniRedIzvrsavanja.begin(), redCekanja.front()); // dodaj prvi proces iz reda cekanja u trenutni red izvrsavanja
                 redCekanja.erase(redCekanja.begin());                                              // izbrisi proces koji se trenutno izvrsava iz reda cekanja
 
@@ -486,7 +484,8 @@ void Dialog::pripremiRR()
 
         if (trenutniRedIzvrsavanja.front().preostaloVrijemeIzvrsavanja > 0)
         {
-            redCekanja.push_back(trenutniRedIzvrsavanja.front()); // ukoliko proces nije u potpunosti zavrsio sa izvrsavanjem dodaj ga na kraj reda cekanja
+            // ukoliko proces nije u potpunosti zavrsio sa izvrsavanjem dodaj ga na kraj reda cekanja
+            redCekanja.push_back(trenutniRedIzvrsavanja.front());
         }
 
         redoslijedIzvrsavanja.push_back(trenutniRedIzvrsavanja.front()); // dodaj trenutni proces u redoslijed izvrsavanja
@@ -535,7 +534,24 @@ void Dialog::pripremiPrioritet()
         if (!redCekanja.empty())
         {
             redCekanja = sortirajProcesePoPrioritetu(redCekanja);
+            // ukoliko dva procesa imaju isti prioritet i vrijeme dolaska
+            redCekanja = dodatnoSortiraj(redCekanja);
         }
+
+        qDebug() << "\n***********redCekanja************";
+        qDebug() << "***********ciklus*" << ciklus << "********";
+        for (auto it : redCekanja)
+        {
+
+            qDebug() << "redCekanja Proces P" << it.redniBroj + 1;
+            qDebug() << "redCekanja.burst" << it.burst;
+            qDebug() << "redCekanja.preostaloVrijemeIzvrsavanja" << it.preostaloVrijemeIzvrsavanja;
+            qDebug() << "redCekanja.redniBroj" << it.redniBroj;
+            qDebug() << "redCekanja.trajanje" << it.trajanje;
+            qDebug() << "redCekanja.trenutakDolaska" << it.trenutakDolaska;
+            qDebug() << "redCekanja.prioritet" << it.prioritet;
+        }
+        qDebug() << "***********redCekanja************\n";
 
         // ukoliko je ovo prvi proces koji dolazi
         if (redoslijedIzvrsavanja.empty())
@@ -558,6 +574,104 @@ void Dialog::pripremiPrioritet()
         if (redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja > 0)
         {
             redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja -= 1;
+        }
+
+        qDebug() << "\n***********redoslijedIzvrsavanja************";
+        qDebug() << "***********ciklus*" << ciklus << "********";
+        for (auto it : redoslijedIzvrsavanja)
+        {
+
+            qDebug() << "redCekanja Proces P" << it.redniBroj + 1;
+            qDebug() << "redCekanja.burst" << it.burst;
+            qDebug() << "redCekanja.preostaloVrijemeIzvrsavanja" << it.preostaloVrijemeIzvrsavanja;
+            qDebug() << "redCekanja.redniBroj" << it.redniBroj;
+            qDebug() << "redCekanja.trajanje" << it.trajanje;
+            qDebug() << "redCekanja.trenutakDolaska" << it.trenutakDolaska;
+            qDebug() << "redCekanja.prioritet" << it.prioritet;
+        }
+        qDebug() << "***********redoslijedIzvrsavanja************\n";
+    }
+}
+
+void Dialog::pripremiPrioritetSaPretpraznjenjem()
+{
+    sortirajProcesePoTrenutkuDolaska(procesi); // sortiraj prvobitni niz po trenutku dolaska procesa
+
+    std::vector<Proces> redCekanja;
+    std::vector<Proces> trenutniRedIzvrsavanja;
+
+    // u slucaju da korisnik pokrece isti algoritam drugi put
+    redCekanja.clear();
+    trenutniRedIzvrsavanja.clear();
+    redoslijedIzvrsavanja.clear();
+
+    // vrijednost ove varijable je zbir trajanja svih procesa
+    int ukupnaDuzinaProcesa = 0;
+    for (int i = 0; i < brojProcesa; i++)
+    {
+        ukupnaDuzinaProcesa += procesi[i].trajanje;
+    }
+
+    for (int ciklus = pocetakCiklusa(); ciklus <= ukupnaDuzinaProcesa; ciklus++)
+    {
+        for (int i = 0; i < brojProcesa; i++)
+        {
+            // ukoliko proces dolazi u ovom ciklusu dodaj ga u red cekanja
+            if (procesi[i].trenutakDolaska == ciklus)
+            {
+                redCekanja.push_back(procesi[i]); // dodaj proces u red cekanja
+            }
+        }
+
+        // ukoliko je vise procesa u redu cekanja sortiraj red cekanja po trajanju procesa
+        if (redCekanja.capacity() > 1)
+        {
+            redCekanja = sortirajProcesePoPrioritetu(redCekanja);
+        }
+
+        // ukoliko je ovo prvi i jedini proces koji dolazi onda ga odma dodajemo u red izvrsavanja
+        if (redoslijedIzvrsavanja.empty())
+        {
+            redoslijedIzvrsavanja.push_back(redCekanja.front());
+            redCekanja.erase(redCekanja.begin()); // obrisi proces iz reda cekanja
+        }
+
+        // ukoliko postoje procesi u redu cekanja i postoje procesi u redoslijeduIzrsavanja
+        else if (!redCekanja.empty() && !redoslijedIzvrsavanja.empty())
+        {
+
+            // ukoliko je trenutni proces zavrsio sa izvrsavanjem
+            if (redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja <= 0)
+            {
+                sortirajProcesePoPrioritetu(redCekanja); // sortiraj redCekanja tako da prvi proces ima najkrace vrijeme izrsavanja
+
+                redoslijedIzvrsavanja.push_back(redCekanja.front()); // pomjeri proces iz reda cekanja u sfjProcese
+                redCekanja.erase(redCekanja.begin());                // obrisi dodani proces iz reda cekanja
+            }
+
+            // ukoliko jedan od procesa u redu cekanja ima krace vrijeme izvrsavanja od trenutnog procesa
+            else if (postojiProcesSaVecimPrioritetom(redCekanja, redoslijedIzvrsavanja.back()))
+            {
+
+                //  ukoliko proces koji se trenutno izvrsava nije gotov sa izvrsavanjem
+                if (redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja > 0)
+                {
+                    redCekanja.push_back(redoslijedIzvrsavanja.back()); // dodaj proces u red cekanja
+                    redCekanja.back().burst = 0;                        // resetuj burst time za proces koji je upravo dodan u red cekanja
+                }
+
+                // dodaj prvi proces u redu cekanja u red izvrsavanja
+                redoslijedIzvrsavanja.push_back(redCekanja.front());
+                // obrisi proces ubaceni proces iz reda cekanja
+                redCekanja.erase(redCekanja.begin());
+            }
+        }
+
+        // smanji preostalo vrijeme izvrsavanja za trenutni proces
+        if (redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja > 0)
+        {
+            redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja -= 1;
+            redoslijedIzvrsavanja.back().burst += 1; // dodaj burst time
         }
     }
 }
@@ -610,7 +724,6 @@ void Dialog::nacrtajAlgoritam()
         if (ui->sa_pretpraznjenjem_radioButton->isChecked())
         {
             duzina = proces.burst * (DUZINA_SCENE / ukupnaDuzinaProcesa);
-            ;
         }
         else if (!ui->sa_pretpraznjenjem_radioButton->isChecked())
         {
@@ -640,12 +753,44 @@ std::vector<Proces> Dialog::sortirajProcesePoPrioritetu(std::vector<Proces> vect
     return vector;
 }
 
+// pomocna funkcija koja se koristi za dodatno sortiranje ukoliko procesi imaju isti prioritet
+std::vector<Proces> Dialog::dodatnoSortiraj(std::vector<Proces> redCekanja)
+{
+    for (unsigned int i = 0; i < redCekanja.size(); i++)
+    {
+        for (unsigned int j = i + 1; j < redCekanja.size(); j++)
+        {
+            if (redCekanja.at(i).prioritet == redCekanja.at(j).prioritet)
+            {
+                if (redCekanja.at(j).redniBroj < redCekanja.at(i).redniBroj)
+                {
+                    Proces temp = redCekanja.at(i);
+                    redCekanja.at(i) = redCekanja.at(j);
+                    redCekanja.at(j) = temp;
+                }
+            }
+        }
+    }
+    return redCekanja;
+}
+
 // pomocna funkcija koja provjerava da li jedan od procesa u redu cekanja ima krace vrijeme izvrsavanja od trenutnog procesa
 bool Dialog::postojiKraceVrijemeIzvrsavanja(std::vector<Proces> redCekanja, Proces trenutniProces)
 {
     for (auto proces : redCekanja)
     {
         if (proces.trajanje < trenutniProces.preostaloVrijemeIzvrsavanja && proces.preostaloVrijemeIzvrsavanja > 0)
+            return true;
+    }
+    return false;
+}
+
+// pomocna funkcija koja provjerava da li jedan od procesa u redu cekanja ima veci prioritet od trenutnog procesa
+bool Dialog::postojiProcesSaVecimPrioritetom(std::vector<Proces> redCekanja, Proces trenutniProces)
+{
+    for (auto proces : redCekanja)
+    {
+        if (proces.prioritet < trenutniProces.prioritet && proces.preostaloVrijemeIzvrsavanja > 0)
             return true;
     }
     return false;
