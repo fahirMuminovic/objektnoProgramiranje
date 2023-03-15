@@ -538,21 +538,6 @@ void Dialog::pripremiPrioritet()
             redCekanja = dodatnoSortiraj(redCekanja);
         }
 
-        qDebug() << "\n***********redCekanja************";
-        qDebug() << "***********ciklus*" << ciklus << "********";
-        for (auto it : redCekanja)
-        {
-
-            qDebug() << "redCekanja Proces P" << it.redniBroj + 1;
-            qDebug() << "redCekanja.burst" << it.burst;
-            qDebug() << "redCekanja.preostaloVrijemeIzvrsavanja" << it.preostaloVrijemeIzvrsavanja;
-            qDebug() << "redCekanja.redniBroj" << it.redniBroj;
-            qDebug() << "redCekanja.trajanje" << it.trajanje;
-            qDebug() << "redCekanja.trenutakDolaska" << it.trenutakDolaska;
-            qDebug() << "redCekanja.prioritet" << it.prioritet;
-        }
-        qDebug() << "***********redCekanja************\n";
-
         // ukoliko je ovo prvi proces koji dolazi
         if (redoslijedIzvrsavanja.empty())
         {
@@ -575,21 +560,6 @@ void Dialog::pripremiPrioritet()
         {
             redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja -= 1;
         }
-
-        qDebug() << "\n***********redoslijedIzvrsavanja************";
-        qDebug() << "***********ciklus*" << ciklus << "********";
-        for (auto it : redoslijedIzvrsavanja)
-        {
-
-            qDebug() << "redCekanja Proces P" << it.redniBroj + 1;
-            qDebug() << "redCekanja.burst" << it.burst;
-            qDebug() << "redCekanja.preostaloVrijemeIzvrsavanja" << it.preostaloVrijemeIzvrsavanja;
-            qDebug() << "redCekanja.redniBroj" << it.redniBroj;
-            qDebug() << "redCekanja.trajanje" << it.trajanje;
-            qDebug() << "redCekanja.trenutakDolaska" << it.trenutakDolaska;
-            qDebug() << "redCekanja.prioritet" << it.prioritet;
-        }
-        qDebug() << "***********redoslijedIzvrsavanja************\n";
     }
 }
 
