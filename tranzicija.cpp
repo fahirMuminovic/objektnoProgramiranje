@@ -20,43 +20,16 @@ Tranzicija::Tranzicija(int koordinataX, int koordinataY,int duzina, int rotacija
 void Tranzicija::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget){
     QPen linije;
     QBrush boja;
-    QPainterPath strelica = shape();
+    QPainterPath path = shape();
+    QPolygonF strelica(shape());
 
-    // definise pen koji ce se koristiti za iscrtavanje strelice
-    linije.setWidth(2);
-    linije.setColor(Qt::black);
-    painter->setPen(linije);
 
-    // odredjuje boju strelica
-    boja.setColor(Qt::green);
-    boja.setStyle(Qt::SolidPattern);
-
-painter->drawRect(boundingRect());
-    // Set the position of the Tranzicija item based on the top-left corner of the QGraphicsScene
-    QPointF position(0, 0);
-    setPos(position);
-
-    // Set the rotation of the Tranzicija item around itself
-//    this->setRotation(rotation);
-
-    // Rotate the polygon around its center point by the rotation value
-    QPointF center = strelica.boundingRect().center(); // get the center point of the polygon
-    QTransform transform;
-    transform.translate(center.x(), center.y()); // translate to the center point
-    transform.rotate(rotacija); // rotate
-    transform.translate(-center.x(), -center.y()); // translate back
-    strelica = transform.map(strelica); // apply the transformation to the polygon
-
-    // Paint the polygon on the QGraphicsScene
-    painter->drawPath(strelica);
-
-    painter->fillPath(strelica,boja);
 }
 
 // funkcija koja definira granice elementa
 QRectF Tranzicija::boundingRect() const
 {
-    return shape().boundingRect();
+
 }
 
 
