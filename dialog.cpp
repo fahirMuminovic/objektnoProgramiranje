@@ -1,6 +1,7 @@
 #include "dialog.h"
 #include "ui_dialog.h"
 #include <QPainter>
+#include "tranzicija.h"
 
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
@@ -50,12 +51,14 @@ void Dialog::inicijalizirajElemente() {
 
 // funkcija crta elemente na QGraphicsView
 void Dialog::iscrtajElemente(){
+    // nacrtaj stanja na sceni
     scene->addItem(startStanje);
     scene->addItem(readyStanje);
     scene->addItem(waitStanje);
     scene->addItem(runStanje);
     scene->addItem(stopStanje);
 
+    // nacrtaj tranzicije(strelice) na sceni
     scene->addItem(readyRunTranzicija);
     scene->addItem(runReadyTranzicija);
     scene->addItem(startReadyTranzicija);

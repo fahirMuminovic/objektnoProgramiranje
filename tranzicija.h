@@ -21,8 +21,8 @@ public:
     Tranzicija(int koordinataX, int koordinataY,int duzina, int rotacija);
     // metoda overloada QPainter
     void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget  * widget);
-    QRectF boundingRect() const;
-
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);

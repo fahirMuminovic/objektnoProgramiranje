@@ -13,12 +13,14 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        dialog.cpp \
-    stanje.cpp \
-    tranzicija.cpp
+		dialog.cpp \
+	stanje.cpp \
+	tranzicija.cpp
 
 HEADERS  += dialog.h \
-    stanje.h \
-    tranzicija.h
+	stanje.h \
+	tranzicija.h
 
 FORMS    += dialog.ui
+
+CONFIG += c++11
