@@ -42,11 +42,11 @@ void Dialog::inicijalizirajElemente() {
     stopStanje = new Stanje(690, 20, QString("Stop"));
 
     readyRunTranzicija = new Tranzicija(260, 325, 270, 0);
-    runReadyTranzicija = new Tranzicija(-540, -285, 270, 180);
-    startReadyTranzicija = new Tranzicija(140,15, 150, 53);
-    waitReadyTranzicija = new Tranzicija(-600, -100, 180, 225);
-    runWaitTranzicija = new Tranzicija(-160, -660, 180, 135);
-    runStopTranzicija = new Tranzicija(175, 660, 155, 307);
+    runReadyTranzicija = new Tranzicija(260, 280, 270, 180);
+    startReadyTranzicija = new Tranzicija(55,130, 150, 53);
+    waitReadyTranzicija = new Tranzicija(360, 495, 180, 225);
+    runWaitTranzicija = new Tranzicija(590, 355, 180, 135);
+    runStopTranzicija = new Tranzicija(635, 255, 155, 307);
 }
 
 // funkcija crta elemente na QGraphicsView
@@ -89,6 +89,26 @@ void Dialog::konektujSignale() {
     connect( waitReadyTranzicija,SIGNAL(onClick()),this,SLOT(pomjeriProces()));
     connect(   runWaitTranzicija,SIGNAL(onClick()),this,SLOT(pomjeriProces()));
     connect(   runStopTranzicija,SIGNAL(onClick()),this,SLOT(pomjeriProces()));
+
+    connect(readyRunTranzicija, &Tranzicija::onClick, this, []() {
+        qDebug() << "readyRunTranzicija clicked!";
+    });
+    connect(runReadyTranzicija, &Tranzicija::onClick, this, []() {
+        qDebug() << "runReadyTranzicija clicked!";
+    });
+    connect(startReadyTranzicija, &Tranzicija::onClick, this, []() {
+        qDebug() << "startReadyTranzicija clicked!";
+    });
+    connect(waitReadyTranzicija, &Tranzicija::onClick, this, []() {
+        qDebug() << "waitReadyTranzicija clicked!";
+    });
+    connect(runWaitTranzicija, &Tranzicija::onClick, this, []() {
+        qDebug() << "runWaitTranzicija clicked!";
+    });
+    connect(runStopTranzicija, &Tranzicija::onClick, this, []() {
+        qDebug() << "runStopTranzicija clicked!";
+    });
+
 }
 
 // provjera da li se procesi mogu prebaciti iz odgovarajucih stanja

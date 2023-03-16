@@ -1,4 +1,6 @@
 #include "tranzicija.h"
+#include <QGraphicsSceneMouseEvent>
+
 
 Tranzicija::Tranzicija(int koordinataX, int koordinataY,int duzina, int rotacija)
 {
@@ -8,6 +10,11 @@ Tranzicija::Tranzicija(int koordinataX, int koordinataY,int duzina, int rotacija
     this->tempY = koordinataY;
     this->rotacija = rotacija;
     this->duzina = duzina;
+    setFlag(QGraphicsItem::ItemIsSelectable);
+    this->setFlag(ItemIsSelectable);
+    this->setFlag(QGraphicsItem::ItemIsSelectable);
+
+    setFlag(QGraphicsItem::ItemIsMovable);
 }
 
 void Tranzicija::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget){
@@ -15,15 +22,6 @@ void Tranzicija::paint(QPainter * painter, const QStyleOptionGraphicsItem * opti
     QBrush boja;
     QPainterPath strelica;
     QPolygon tackeStrelice;
-
-    // odredjuje tacke koje ce se koristiti u addPolygon metodi
-    tackeStrelice << QPoint(koordinataX,koordinataY);
-    tackeStrelice << QPoint(koordinataX+duzina,koordinataY);
-    tackeStrelice << QPoint(koordinataX+duzina,koordinataY-10);
-    tackeStrelice << QPoint(koordinataX+duzina+15,koordinataY+5);
-    tackeStrelice << QPoint(koordinataX+duzina,koordinataY+20);
-    tackeStrelice << QPoint(koordinataX+duzina,koordinataY+10);
-    tackeStrelice << QPoint(koordinataX,koordinataY+10);
 
     // definise pen koji ce se koristiti za iscrtavanje strelice
     linije.setWidth(2);
@@ -34,46 +32,36 @@ void Tranzicija::paint(QPainter * painter, const QStyleOptionGraphicsItem * opti
     boja.setColor(Qt::green);
     boja.setStyle(Qt::SolidPattern);
 
-    // pravi strelicu na osnovu zadanih tacki
-    strelica.addPolygon(tackeStrelice);
-    // rotacija strelice
-    painter->rotate(rotacija);
-    // crta strelicu
-    painter->drawPolygon(tackeStrelice);
-    // boji strelicu
-    painter->fillPath(strelica,boja);
+    // Calculate the center point of the item
+    QPointF centerPoint = boundingRect().center();
 
-    painter->drawPath(shape());
     painter->drawRect(boundingRect());
+
+    // Save the current painter state
+    painter->save();
+
+    // Translate the painter to the desired position on the scene
+    painter->translate(0, 0);
+
+    // Set the rotation origin point to the center of the item
+    setTransformOriginPoint(centerPoint);
+
+    // Rotate the item
+    QTransform transform;
+    transform.rotate(rotacija);
+    setTransform(transform);
+
+    // Paint the item's shape relative to the top-left corner of the scene
+    painter->drawPath(shape());
+    painter->fillPath(shape(),boja);
+
+    // Restore the painter state
+    painter->restore();
 }
 
 // funkcija koja definira granice elementa
 QRectF Tranzicija::boundingRect() const
 {
-//    if(rotacija == 0){
-//        //ready run
-//        return QRectF(260, 315, 285, 30);
-//    }
-//    else if(rotacija == 180){
-//        // run ready
-//        return QRectF(255, 265, 285, 30);
-//    }
-//    else if(rotacija == 53){
-//        // start ready
-//        return QRectF(65, 120, 105, 135);
-//    }
-//    else if(rotacija == 307){
-//        // run stop
-//        return QRectF(632, 125, 112, 138);
-//    }
-//    else if(rotacija == 135){
-//        // run wait
-//        return QRectF(435, 348, 145, 142);
-//    }
-//    else {
-//        // wait ready
-//        return QRectF(218, 353, 142, 140);
-//    }
     return shape().boundingRect();
 }
 
@@ -99,4 +87,7 @@ QPainterPath Tranzicija::shape() const
 void Tranzicija::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     emit onClick();
+
+    QPointF scenePos = event->scenePos();
+    qDebug() << "Mouse click at:" << scenePos.x() << "," << scenePos.y();
 }
