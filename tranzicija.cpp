@@ -20,8 +20,7 @@ Tranzicija::Tranzicija(int koordinataX, int koordinataY,int duzina, int rotacija
 void Tranzicija::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget){
     QPen linije;
     QBrush boja;
-    QPainterPath strelica;
-    QPolygon tackeStrelice;
+    QPainterPath strelica = shape();
 
     // definise pen koji ce se koristiti za iscrtavanje strelice
     linije.setWidth(2);
@@ -32,31 +31,26 @@ void Tranzicija::paint(QPainter * painter, const QStyleOptionGraphicsItem * opti
     boja.setColor(Qt::green);
     boja.setStyle(Qt::SolidPattern);
 
-    // Calculate the center point of the item
-    QPointF centerPoint = boundingRect().center();
+painter->drawRect(boundingRect());
+    // Set the position of the Tranzicija item based on the top-left corner of the QGraphicsScene
+    QPointF position(0, 0);
+    setPos(position);
 
-    painter->drawRect(boundingRect());
+    // Set the rotation of the Tranzicija item around itself
+//    this->setRotation(rotation);
 
-    // Save the current painter state
-    painter->save();
-
-    // Translate the painter to the desired position on the scene
-    painter->translate(0, 0);
-
-    // Set the rotation origin point to the center of the item
-    setTransformOriginPoint(centerPoint);
-
-    // Rotate the item
+    // Rotate the polygon around its center point by the rotation value
+    QPointF center = strelica.boundingRect().center(); // get the center point of the polygon
     QTransform transform;
-    transform.rotate(rotacija);
-    setTransform(transform);
+    transform.translate(center.x(), center.y()); // translate to the center point
+    transform.rotate(rotacija); // rotate
+    transform.translate(-center.x(), -center.y()); // translate back
+    strelica = transform.map(strelica); // apply the transformation to the polygon
 
-    // Paint the item's shape relative to the top-left corner of the scene
-    painter->drawPath(shape());
-    painter->fillPath(shape(),boja);
+    // Paint the polygon on the QGraphicsScene
+    painter->drawPath(strelica);
 
-    // Restore the painter state
-    painter->restore();
+    painter->fillPath(strelica,boja);
 }
 
 // funkcija koja definira granice elementa
