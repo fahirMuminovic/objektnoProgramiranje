@@ -6,7 +6,7 @@
 #include <vector>
 
 Dialog::Dialog(QWidget *parent) : QDialog(parent),
-                                  ui(new Ui::Dialog)
+    ui(new Ui::Dialog)
 {
     ui->setupUi(this);
 
@@ -128,31 +128,22 @@ void Dialog::on_nacrtajDijagramBtn_clicked()
     // iscrtaj text za procese pored y ose
     nacrtajProcesText();
     // iscrtaj QRectItem-e za procese na odgovarajucim koordinatama
-    nacrtajProces();
+    nacrtajProceseZaOdabraniAlgoritam();
 }
 
 // pomocna funkcija koja inicijalizira niz koji sadrži objekte proces
 void Dialog::napraviNizObjekataProces()
 {
-    if (ui->algoritam_comboBox->currentText() == "Prioritet")
+    for (int i = 0; i < brojProcesa; i++)
     {
-        for (int i = 0; i < brojProcesa; i++)
+        procesi[i].trajanje = trajanjeCiklusa[i]->value();
+        procesi[i].trenutakDolaska = dolazakUCiklusu[i]->value();
+        procesi[i].redniBroj = i;
+        procesi[i].preostaloVrijemeIzvrsavanja = trajanjeCiklusa[i]->value();
+
+        if (ui->algoritam_comboBox->currentText() == "Prioritet")
         {
-            procesi[i].trajanje = trajanjeCiklusa[i]->value();
-            procesi[i].trenutakDolaska = dolazakUCiklusu[i]->value();
-            procesi[i].redniBroj = i;
-            procesi[i].preostaloVrijemeIzvrsavanja = trajanjeCiklusa[i]->value();
-            procesi[i].prioritet = prioritetProcesa[i]->value(); // dodatni property koji imaju procesi u prioritet algoritmu
-        }
-    }
-    else
-    {
-        for (int i = 0; i < brojProcesa; i++)
-        {
-            procesi[i].trajanje = trajanjeCiklusa[i]->value();
-            procesi[i].trenutakDolaska = dolazakUCiklusu[i]->value();
-            procesi[i].redniBroj = i;
-            procesi[i].preostaloVrijemeIzvrsavanja = trajanjeCiklusa[i]->value();
+            procesi[i].prioritet = prioritetProcesa[i]->value();
         }
     }
 }
@@ -174,11 +165,11 @@ void Dialog::nacrtajProcesText()
 }
 
 // funkcija koja crta korisnicki odabrani algoritam tj. poziva fukncije koje crtaju odgovarajuce algoritme
-void Dialog::nacrtajProces()
+void Dialog::nacrtajProceseZaOdabraniAlgoritam()
 {
-    int odabraniProces = ui->algoritam_comboBox->currentIndex();
+    int odabraniAlgoritam = ui->algoritam_comboBox->currentIndex();
 
-    switch (odabraniProces)
+    switch (odabraniAlgoritam)
     {
 
     case 0: // FCFS algoritam
@@ -219,36 +210,22 @@ void Dialog::pripremiFCFS()
     // procese sortiramo po njihovom trenutku dolaska
     sortirajProcesePoTrenutkuDolaska(procesi);
 
-    // vrijednost ove varijable je zbir trajanja svih procesa
-    int ukupnaDuzinaProcesa = 0;
-    for (int i = 0; i < brojProcesa; i++)
-    {
-        ukupnaDuzinaProcesa += procesi[i].trajanje;
-    }
-
     std::vector<Proces> redCekanja;
     // ukoliko korisnik pokrece isti algoritam vise puta
     redCekanja.clear();
     redoslijedIzvrsavanja.clear();
 
-    for (int ciklus = pocetakCiklusa(); ciklus <= ukupnaDuzinaProcesa; ciklus++)
-    {
-        for (int i = 0; i < brojProcesa; i++)
+    for(int ciklus = pocetakCiklusa(); ciklus < ukupnoTrajanjeProcesa(); ciklus++){
+        // ubaci procese koji dolaze u ovom ciklusu u red cekanja
+        for (int i = 0; i < brojProcesa; i++ )
         {
             if (procesi[i].trenutakDolaska == ciklus)
             {
-                // ukoliko proces dolazi u ovom ciklusu dodaj ga u red cekanja
                 redCekanja.insert(redCekanja.begin(), procesi[i]);
             }
         }
 
-        // ukoliko imamo vise procesa u redu cekanja sortiramo ih prema rednom broju
-        if (redCekanja.capacity() > 1)
-        {
-            redCekanja = sortirajProcesePoRednomBroju(redCekanja);
-        }
-        if (!redCekanja.empty())
-        {
+        if(!redCekanja.empty()){
             // dodaj prvi proces iz reda cekanja u redoslijed izrsavanja
             redoslijedIzvrsavanja.push_back(redCekanja.front());
             redCekanja.erase(redCekanja.begin());
@@ -259,57 +236,52 @@ void Dialog::pripremiFCFS()
 // funkcija koja priprema redoslijed procesa za crtanje SJF algoritma
 void Dialog::pripremiSJF()
 {
-    // vrijednost ove varijable je zbir trajanja svih procesa
-    int ukupnaDuzinaProcesa = 0;
-    for (int i = 0; i < brojProcesa; i++)
-    {
-        ukupnaDuzinaProcesa += procesi[i].trajanje;
-    }
+    sortirajProcesePoTrenutkuDolaska(procesi); // sortiraj procese po trenutku dolaska
 
-    sortirajProcesePoTrenutkuDolaska(procesi); // sortiraj prvobitni niz po trenutku dolaska procesa
-
-    Proces procesiKopija[brojProcesa]; // niz koji se koristi za dodatno sortiranje po duzini trajanja procesa
+    Proces sortiraniProcesi[brojProcesa];
     // kopiraj niz proces koristeci std::copy funkciju za deep copy
-    std::copy(procesi, procesi + brojProcesa, procesiKopija);
+    std::copy(procesi, procesi + brojProcesa, sortiraniProcesi);
 
-    sortirajProcesePoTrajanju(procesiKopija); // sortiraj kopirani niz po duzini trajanja procesa
+//    Proces sortiraniProcesi = &procesi;
+
+    sortirajProcesePoTrajanju(sortiraniProcesi); // sortiraj procese po duzini trajanja
 
     std::vector<Proces> redCekanja;
-    redCekanja.clear();            // u slucaju da korisnik pokrece isti algoritam drugi put
-    redoslijedIzvrsavanja.clear(); // u slucaju da korisnik pokrece isti algoritam drugi put
+    // u slucaju da korisnik pokrece isti algoritam drugi put
+    redCekanja.clear();
+    redoslijedIzvrsavanja.clear();
 
-    for (int ciklus = pocetakCiklusa(); ciklus <= ukupnaDuzinaProcesa; ciklus++)
+    for (int ciklus = pocetakCiklusa(); ciklus <= ukupnoTrajanjeProcesa(); ciklus++)
     {
-        for (int i = 0; i < brojProcesa; i++)
+        // ubaci procese koji dolaze u ovom ciklusu u red cekanja
+        for (const auto& proces : sortiraniProcesi)
         {
-            // ukoliko proces dolazi u ovom ciklusu dodaj ga u red cekanja
-            if (procesiKopija[i].trenutakDolaska == ciklus)
+            if (proces.trenutakDolaska == ciklus)
             {
-                redCekanja.push_back(procesiKopija[i]);
+                redCekanja.push_back(proces);
             }
         }
-        // ukoliko je vise procesa u redu cekanja sortiraj red cekanja po trajanju procesa
-        if (redCekanja.capacity() > 1)
+
+        // sortiraj red čekanja po dužini trajanja procesa
+        if (redCekanja.size() > 1)
         {
-            redCekanja = sortirajProcesePoTrajanjuVector(redCekanja);
+            sortirajProcesePoTrajanju(redCekanja);
         }
 
-        // ukoliko je ovo prvi i jedini proces koji dolazi onda ga odma dodajemo u red izvrsavanja
+        // ako je red izvršavanja prazan, dodaj prvi proces iz reda čekanja
         if (redoslijedIzvrsavanja.empty())
         {
             redoslijedIzvrsavanja.push_back(redCekanja.front());
             redCekanja.erase(redCekanja.begin()); // obrisi proces iz reda cekanja
         }
-        // ukoliko red cekanja ima procese i proces koji se trenutno izvsava ima 0 preostalog vremena tj. gotov je sa izvrsavanjem
-        if ((!redCekanja.empty()) && redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja <= 0)
+
+        // ukoliko je proces izvrsen u potpunosti
+        if (redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja <= 0 && !redCekanja.empty())
         {
-            // ukoliko proces nije vec u redu cekanja
-            if (nijeUSjfProcesi(redoslijedIzvrsavanja, redCekanja.front().redniBroj))
-            {
-                // dodaj prvi proces u redu cekanja u red izvrsavanja
-                redoslijedIzvrsavanja.push_back(redCekanja.front());
-            };
-            // obrisi proces koji je ubacen u vektor iz reda cekanja
+            // dodaj prvi proces iz reda cekanja u red izvrsavanja
+            redoslijedIzvrsavanja.push_back(redCekanja.front());
+
+            // obrisi proces koji je ubacen u red izvrsavanja iz reda cekanja
             redCekanja.erase(redCekanja.begin());
         }
 
@@ -324,13 +296,6 @@ void Dialog::pripremiSJF()
 // funkcija koja priprema redoslijed procesa za crtanje SJF algoritama sa pretpraznjenjem
 void Dialog::pripremiSJFsaPretpaznjenjem()
 {
-    // vrijednost ove varijable je zbir trajanja svih procesa
-    int ukupnaDuzinaProcesa = 0;
-    for (int i = 0; i < brojProcesa; i++)
-    {
-        ukupnaDuzinaProcesa += procesi[i].trajanje;
-    }
-
     sortirajProcesePoTrenutkuDolaska(procesi); // sortiraj prvobitni niz po trenutku dolaska procesa
 
     Proces procesiKopija[brojProcesa]; // niz koji se koristi za dodatno sortiranje po duzini trajanja procesa
@@ -343,7 +308,7 @@ void Dialog::pripremiSJFsaPretpaznjenjem()
     redCekanja.clear();            // u slucaju da korisnik pokrece isti algoritam drugi put
     redoslijedIzvrsavanja.clear(); // u slucaju da korisnik pokrece isti algoritam drugi put
 
-    for (int ciklus = pocetakCiklusa(); ciklus < ukupnaDuzinaProcesa; ciklus++)
+    for (int ciklus = pocetakCiklusa(); ciklus < ukupnoTrajanjeProcesa(); ciklus++)
     {
         for (int i = 0; i < brojProcesa; i++)
         {
@@ -357,7 +322,7 @@ void Dialog::pripremiSJFsaPretpaznjenjem()
         // ukoliko je vise procesa u redu cekanja sortiraj red cekanja po trajanju procesa
         if (redCekanja.capacity() > 1)
         {
-            redCekanja = sortirajProcesePoTrajanjuVector(redCekanja);
+            sortirajProcesePoTrajanju(redCekanja);
         }
 
         // ukoliko je ovo prvi i jedini proces koji dolazi onda ga odma dodajemo u red izvrsavanja
@@ -374,14 +339,14 @@ void Dialog::pripremiSJFsaPretpaznjenjem()
             // ukoliko je trenutni proces zavrsio sa izvrsavanjem
             if (redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja <= 0)
             {
-                sortirajProcesePoTrajanjuVector(redCekanja); // sortiraj redCekanja tako da prvi proces ima najkrace vrijeme izrsavanja
+                sortirajProcesePoTrajanju(redCekanja); // sortiraj redCekanja tako da prvi proces ima najkrace vrijeme izrsavanja
 
                 redoslijedIzvrsavanja.push_back(redCekanja.front()); // pomjeri proces iz reda cekanja u sfjProcese
                 redCekanja.erase(redCekanja.begin());                // obrisi dodani proces iz reda cekanja
             }
 
             // ukoliko jedan od procesa u redu cekanja ima krace vrijeme izvrsavanja od trenutnog procesa
-            else if (postojiKraceVrijemeIzvrsavanja(redCekanja, redoslijedIzvrsavanja.back()))
+            else if (imaKraceVrijemeIzvrsavanja(redCekanja, redoslijedIzvrsavanja.back()))
             {
 
                 //  ukoliko proces koji se trenutno izvrsava nije gotov sa izvrsavanjem
@@ -411,13 +376,6 @@ void Dialog::pripremiSJFsaPretpaznjenjem()
 void Dialog::pripremiRR()
 {
     int const TIME_QUANTUM = 2;
-
-    // vrijednost ove varijable je zbir trajanja svih procesa
-    int ukupnaDuzinaProcesa = 0;
-    for (int i = 0; i < brojProcesa; i++)
-    {
-        ukupnaDuzinaProcesa += procesi[i].trajanje;
-    }
 
     sortirajProcesePoTrenutkuDolaska(procesi); // sortiraj prvobitni niz po trenutku dolaska procesa
 
@@ -472,7 +430,6 @@ void Dialog::pripremiRR()
                 trenutniRedIzvrsavanja.front().preostaloVrijemeIzvrsavanja -= 1;
                 trenutniRedIzvrsavanja.front().burst = i + 1; // upisi burst time
 
-                //                }
             }
             else
             {
@@ -506,20 +463,13 @@ void Dialog::pripremiRR()
 // funkcija koja priprema redoslijed procesa za crtanje Prioritet algoritma
 void Dialog::pripremiPrioritet()
 {
-    // vrijednost ove varijable je zbir trajanja svih procesa
-    int ukupnaDuzinaProcesa = 0;
-    for (int i = 0; i < brojProcesa; i++)
-    {
-        ukupnaDuzinaProcesa += procesi[i].trajanje;
-    }
-
     sortirajProcesePoTrenutkuDolaska(procesi); // sortiraj prvobitni niz po trenutku dolaska procesa
 
     std::vector<Proces> redCekanja;
     redCekanja.clear();            // u slucaju da korisnik pokrece isti algoritam drugi put
     redoslijedIzvrsavanja.clear(); // u slucaju da korisnik pokrece isti algoritam drugi put
 
-    for (int ciklus = pocetakCiklusa(); ciklus <= ukupnaDuzinaProcesa; ciklus++)
+    for (int ciklus = pocetakCiklusa(); ciklus <= ukupnoTrajanjeProcesa(); ciklus++)
     {
         for (int i = 0; i < brojProcesa; i++)
         {
@@ -533,9 +483,9 @@ void Dialog::pripremiPrioritet()
         // ukoliko imamo vise od jednog elementa u redu cekanja uzimamo element sa vecim prioritetom
         if (!redCekanja.empty())
         {
-            redCekanja = sortirajProcesePoPrioritetu(redCekanja);
+            sortirajProcesePoPrioritetu(redCekanja);
             // ukoliko dva procesa imaju isti prioritet i vrijeme dolaska
-            redCekanja = dodatnoSortiraj(redCekanja);
+            dodatnoSortiraj(redCekanja);
         }
 
         // ukoliko je ovo prvi proces koji dolazi
@@ -575,14 +525,7 @@ void Dialog::pripremiPrioritetSaPretpraznjenjem()
     trenutniRedIzvrsavanja.clear();
     redoslijedIzvrsavanja.clear();
 
-    // vrijednost ove varijable je zbir trajanja svih procesa
-    int ukupnaDuzinaProcesa = 0;
-    for (int i = 0; i < brojProcesa; i++)
-    {
-        ukupnaDuzinaProcesa += procesi[i].trajanje;
-    }
-
-    for (int ciklus = pocetakCiklusa(); ciklus <= ukupnaDuzinaProcesa; ciklus++)
+    for (int ciklus = pocetakCiklusa(); ciklus <= ukupnoTrajanjeProcesa(); ciklus++)
     {
         for (int i = 0; i < brojProcesa; i++)
         {
@@ -596,7 +539,7 @@ void Dialog::pripremiPrioritetSaPretpraznjenjem()
         // ukoliko je vise procesa u redu cekanja sortiraj red cekanja po trajanju procesa
         if (redCekanja.capacity() > 1)
         {
-            redCekanja = sortirajProcesePoPrioritetu(redCekanja);
+            sortirajProcesePoPrioritetu(redCekanja);
         }
 
         // ukoliko je ovo prvi i jedini proces koji dolazi onda ga odma dodajemo u red izvrsavanja
@@ -620,7 +563,7 @@ void Dialog::pripremiPrioritetSaPretpraznjenjem()
             }
 
             // ukoliko jedan od procesa u redu cekanja ima krace vrijeme izvrsavanja od trenutnog procesa
-            else if (postojiProcesSaVecimPrioritetom(redCekanja, redoslijedIzvrsavanja.back()))
+            else if (imaVeciPrioritet(redCekanja, redoslijedIzvrsavanja.back()))
             {
 
                 //  ukoliko proces koji se trenutno izvrsava nije gotov sa izvrsavanjem
@@ -715,16 +658,25 @@ void Dialog::nacrtajAlgoritam()
     }
 }
 
-// pomocna funkcija koja sortira procese po prioritetu gdje manji broj oznacava veci prioritet
-std::vector<Proces> Dialog::sortirajProcesePoPrioritetu(std::vector<Proces> vector)
-{
-    std::sort(vector.begin(), vector.end(), [](const Proces &prethodnik, const Proces &sljedbenik)
-              { return prethodnik.prioritet < sljedbenik.prioritet; });
-    return vector;
+// pomocna funkcija koja vraca ukupno trajanje procesa
+int Dialog::ukupnoTrajanjeProcesa(){
+    int ukupnoTrajanjeProcesa = 0;
+    for (int i = 0; i < brojProcesa; i++)
+    {
+        ukupnoTrajanjeProcesa += procesi[i].trajanje;
+    }
+    return ukupnoTrajanjeProcesa;
 }
 
-// pomocna funkcija koja se koristi za dodatno sortiranje ukoliko procesi imaju isti prioritet
-std::vector<Proces> Dialog::dodatnoSortiraj(std::vector<Proces> redCekanja)
+// pomocna funkcija koja sortira procese po prioritetu gdje manji broj oznacava veci prioritet
+void Dialog::sortirajProcesePoPrioritetu(std::vector<Proces>& vector)
+{
+    std::sort(vector.begin(), vector.end(), [](const Proces &prethodnik, const Proces &sljedbenik)
+    { return prethodnik.prioritet < sljedbenik.prioritet; });
+}
+
+// pomocna funkcija koja se koristi za dodatno sortiranje ukoliko procesi u redu cekanja imaju isti prioritet
+void Dialog::dodatnoSortiraj(std::vector<Proces>& redCekanja)
 {
     for (unsigned int i = 0; i < redCekanja.size(); i++)
     {
@@ -741,13 +693,13 @@ std::vector<Proces> Dialog::dodatnoSortiraj(std::vector<Proces> redCekanja)
             }
         }
     }
-    return redCekanja;
 }
 
+
 // pomocna funkcija koja provjerava da li jedan od procesa u redu cekanja ima krace vrijeme izvrsavanja od trenutnog procesa
-bool Dialog::postojiKraceVrijemeIzvrsavanja(std::vector<Proces> redCekanja, Proces trenutniProces)
+bool Dialog::imaKraceVrijemeIzvrsavanja(std::vector<Proces>& redCekanja,const Proces& trenutniProces)
 {
-    for (auto proces : redCekanja)
+    for (const auto& proces : redCekanja)
     {
         if (proces.trajanje < trenutniProces.preostaloVrijemeIzvrsavanja && proces.preostaloVrijemeIzvrsavanja > 0)
             return true;
@@ -756,9 +708,9 @@ bool Dialog::postojiKraceVrijemeIzvrsavanja(std::vector<Proces> redCekanja, Proc
 }
 
 // pomocna funkcija koja provjerava da li jedan od procesa u redu cekanja ima veci prioritet od trenutnog procesa
-bool Dialog::postojiProcesSaVecimPrioritetom(std::vector<Proces> redCekanja, Proces trenutniProces)
+bool Dialog::imaVeciPrioritet(std::vector<Proces>& redCekanja,const Proces& trenutniProces)
 {
-    for (auto proces : redCekanja)
+    for (const auto& proces : redCekanja)
     {
         if (proces.prioritet < trenutniProces.prioritet && proces.preostaloVrijemeIzvrsavanja > 0)
             return true;
@@ -766,25 +718,11 @@ bool Dialog::postojiProcesSaVecimPrioritetom(std::vector<Proces> redCekanja, Pro
     return false;
 }
 
-// pomocna funkcija koja provjerava da li je proces vec dodan u vektor
-bool Dialog::nijeUSjfProcesi(std::vector<Proces> procesi, int redniBroj)
-{
-    for (auto proces : procesi)
-    {
-        if (proces.redniBroj == redniBroj)
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
 // pomocna funkcija koja sortira procese po rednom broju od manjeg ka vecem
-std::vector<Proces> Dialog::sortirajProcesePoRednomBroju(std::vector<Proces> vector)
+void Dialog::sortirajProcesePoRednomBroju(std::vector<Proces>& vector)
 {
     std::sort(vector.begin(), vector.end(), [](const Proces &prethodnik, const Proces &sljedbenik)
-              { return prethodnik.redniBroj < sljedbenik.redniBroj; });
-    return vector;
+    { return prethodnik.redniBroj < sljedbenik.redniBroj; });
 }
 
 // pomocna funkcija koja vraca jedinicu vremena kada pocinju ciklusi
@@ -815,6 +753,7 @@ void Dialog::sortirajProcesePoTrenutkuDolaska(Proces *niz)
                 niz[j] = temp;
             }
         }
+
     }
 }
 
@@ -836,11 +775,10 @@ void Dialog::sortirajProcesePoTrajanju(Proces *niz)
 }
 
 // pomocna funkcija koja sortira elemente vektora po trajanju od najkraceg do najduzeg
-std::vector<Proces> Dialog::sortirajProcesePoTrajanjuVector(std::vector<Proces> vector)
+void Dialog::sortirajProcesePoTrajanju(std::vector<Proces>& vector)
 {
     std::sort(vector.begin(), vector.end(), [](const Proces &prethodnik, const Proces &sljedbenik)
-              { return prethodnik.trajanje < sljedbenik.trajanje; });
-    return vector;
+    { return prethodnik.trajanje < sljedbenik.trajanje; });
 }
 
 // UI funkcija koja u zavisnosti od koriscki odabranog broja procesa prikazuje ili sakriva UI elemente
@@ -850,20 +788,11 @@ void Dialog::on_broj_procesa_comboBox_currentIndexChanged(const QString &odabran
 
     for (int i = 0; i < 9; i++)
     {
-        if (i < brojProcesa)
-        {
-            dolazakUCiklusu[i]->setVisible(true);
-            trajanjeCiklusa[i]->setVisible(true);
-            prioritetProcesa[i]->setVisible(true);
-            procesiLabel[i]->setVisible(true);
-        }
-        else
-        {
-            dolazakUCiklusu[i]->setVisible(false);
-            trajanjeCiklusa[i]->setVisible(false);
-            prioritetProcesa[i]->setVisible(false);
-            procesiLabel[i]->setVisible(false);
-        }
+        const bool visible = i < brojProcesa;
+        dolazakUCiklusu[i]->setVisible(visible);
+        trajanjeCiklusa[i]->setVisible(visible);
+        prioritetProcesa[i]->setVisible(visible);
+        procesiLabel[i]->setVisible(visible);
     }
 }
 

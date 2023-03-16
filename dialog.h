@@ -25,8 +25,8 @@ public:
 
     int pocetakCiklusa();
     bool nijeUSjfProcesi(std::vector<Proces> procesi, int redniBroj);
-    bool postojiKraceVrijemeIzvrsavanja(std::vector<Proces> redCekanja, Proces trenutniProces);
-    bool postojiProcesSaVecimPrioritetom(std::vector<Proces> redCekanja, Proces trenutniProces);
+    bool imaKraceVrijemeIzvrsavanja(std::vector<Proces>& redCekanja,const Proces& trenutniProces);
+    bool imaVeciPrioritet(std::vector<Proces>& redCekanja,const Proces& trenutniProces);
 private slots:
     void on_broj_procesa_comboBox_currentIndexChanged(const QString &broj);
     void on_nacrtajDijagramBtn_clicked();
@@ -52,7 +52,7 @@ private:
     void postaviUIElementeUNizove();
     void napraviNizObjekataProces();
     void nacrtajProcesText();
-    void nacrtajProces();
+    void nacrtajProceseZaOdabraniAlgoritam();
 
     void pripremiFCFS();
     void nacrtajAlgoritam();
@@ -65,10 +65,11 @@ private:
     void sortirajProcesePoTrenutkuDolaska(Proces *niz);
     void sortirajProcesePoTrajanju(Proces *niz);
 
-    std::vector<Proces> sortirajProcesePoTrajanjuVector(std::vector<Proces> vector);
-    std::vector<Proces> sortirajProcesePoPrioritetu(std::vector<Proces> vector);
-    std::vector<Proces> sortirajProcesePoRednomBroju(std::vector<Proces> vector);
-    std::vector<Proces> dodatnoSortiraj(std::vector<Proces> redCekanja);
+    void dodatnoSortiraj(std::vector<Proces> &redCekanja);
+    void sortirajProcesePoPrioritetu(std::vector<Proces> &vector);
+    void sortirajProcesePoTrajanju(std::vector<Proces> &vector);
+    int ukupnoTrajanjeProcesa();
+    void sortirajProcesePoRednomBroju(std::vector<Proces> &vector);
 };
 
 #endif // DIALOG_H
