@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <algorithm>
 #include <vector>
+#include <string>
 
 Dialog::Dialog(QWidget *parent) : QDialog(parent),
                                   ui(new Ui::Dialog)
@@ -235,8 +236,10 @@ void Dialog::pripremiFCFS()
 
         if (!redCekanja.empty())
         {
+            // procese sortiramo po njihovom trenutku dolaska
+            sortirajProcesePoTrenutkuDolaska(redCekanja);
             // ukoliko dva procesa dolaze u istom ciklusu uzima se onaj koji ima manji redni broj
-            dodatnoSortirajPoRednomBroju2(redCekanja);
+            dodatnoSortirajPoRednomBroju("Trenutak Dolaska",redCekanja);
 
             // dodaj prvi proces iz reda cekanja u redoslijed izrsavanja
             redoslijedIzvrsavanja.push_back(redCekanja.front());
@@ -333,7 +336,7 @@ void Dialog::pripremiSJFsaPretpaznjenjem()
         if (redCekanja.size() > 1)
         {
             sortirajProcesePoTrajanju(redCekanja);
-            dodatnoSortirajPoRednomBroju3(redCekanja);
+            dodatnoSortirajPoRednomBroju("Preostalo Vrijeme",redCekanja);
         }
 
         // ukoliko je ovo prvi i jedini proces koji dolazi onda ga odma dodajemo u red izvrsavanja
@@ -490,7 +493,7 @@ void Dialog::pripremiPrioritet()
         {
             sortirajProcesePoPrioritetu(redCekanja);
             // ukoliko dva procesa imaju isti prioritet i vrijeme dolaska
-            dodatnoSortirajPoRednomBroju(redCekanja);
+            dodatnoSortirajPoRednomBroju("Prioritet",redCekanja);
         }
 
         // ukoliko je ovo prvi proces koji dolazi
@@ -662,13 +665,63 @@ void Dialog::sortirajProcesePoPrioritetu(std::vector<Proces> &vector)
 }
 
 // pomocna funkcija koja se koristi za dodatno sortiranje ukoliko procesi u redu cekanja imaju isti prioritet
-void Dialog::dodatnoSortirajPoRednomBroju(std::vector<Proces> &redCekanja)
+//void Dialog::dodatnoSortirajPoRednomBroju(std::vector<Proces> &redCekanja)
+//{
+//    for (unsigned int i = 0; i < redCekanja.size() - 1; i++)
+//    {
+//        for (unsigned int j = i + 1; j < redCekanja.size(); j++)
+//        {
+//            if (redCekanja[i].prioritet == redCekanja[j].prioritet && redCekanja[j].redniBroj < redCekanja[i].redniBroj)
+//            {
+//                std::swap(redCekanja[i], redCekanja[j]);
+//            }
+//        }
+//    }
+//}
+
+//void Dialog::dodatnoSortirajPoRednomBroju2(std::vector<Proces> &redCekanja)
+//{
+//    for (unsigned int i = 0; i < redCekanja.size() - 1; i++)
+//    {
+//        for (unsigned int j = i + 1; j < redCekanja.size(); j++)
+//        {
+//            if (redCekanja[i].trenutakDolaska == redCekanja[j].trenutakDolaska && redCekanja[j].redniBroj < redCekanja[i].redniBroj)
+//            {
+//                std::swap(redCekanja[i], redCekanja[j]);
+//            }
+//        }
+//    }
+//}
+
+//void Dialog::dodatnoSortirajPoRednomBroju3(std::vector<Proces> &redCekanja)
+//{
+//    for (unsigned int i = 0; i < redCekanja.size() - 1; i++)
+//    {
+//        for (unsigned int j = i + 1; j < redCekanja.size(); j++)
+//        {
+//            if ((redCekanja[i].preostaloVrijemeIzvrsavanja == redCekanja[j].preostaloVrijemeIzvrsavanja) && (redCekanja[j].redniBroj < redCekanja[i].redniBroj))
+//            {
+//                std::swap(redCekanja[i], redCekanja[j]);
+//            }
+//        }
+//    }
+//}
+
+void Dialog::dodatnoSortirajPoRednomBroju(std::string tipSortiranja, std::vector<Proces> &redCekanja)
 {
     for (unsigned int i = 0; i < redCekanja.size() - 1; i++)
     {
         for (unsigned int j = i + 1; j < redCekanja.size(); j++)
         {
-            if (redCekanja[i].prioritet == redCekanja[j].prioritet && redCekanja[j].redniBroj < redCekanja[i].redniBroj)
+            if (tipSortiranja == "Prioritet" && redCekanja[i].prioritet == redCekanja[j].prioritet && redCekanja[j].redniBroj < redCekanja[i].redniBroj)
+            {
+                std::swap(redCekanja[i], redCekanja[j]);
+            }
+            else if (tipSortiranja == "Trenutak Dolaska" && redCekanja[i].trenutakDolaska == redCekanja[j].trenutakDolaska && redCekanja[j].redniBroj < redCekanja[i].redniBroj)
+            {
+                std::swap(redCekanja[i], redCekanja[j]);
+            }
+            else if (tipSortiranja == "Preostalo Vrijeme" && redCekanja[i].preostaloVrijemeIzvrsavanja == redCekanja[j].preostaloVrijemeIzvrsavanja && redCekanja[j].redniBroj < redCekanja[i].redniBroj)
             {
                 std::swap(redCekanja[i], redCekanja[j]);
             }
@@ -676,33 +729,6 @@ void Dialog::dodatnoSortirajPoRednomBroju(std::vector<Proces> &redCekanja)
     }
 }
 
-void Dialog::dodatnoSortirajPoRednomBroju2(std::vector<Proces> &redCekanja)
-{
-    for (unsigned int i = 0; i < redCekanja.size() - 1; i++)
-    {
-        for (unsigned int j = i + 1; j < redCekanja.size(); j++)
-        {
-            if (redCekanja[i].trenutakDolaska == redCekanja[j].trenutakDolaska && redCekanja[j].redniBroj < redCekanja[i].redniBroj)
-            {
-                std::swap(redCekanja[i], redCekanja[j]);
-            }
-        }
-    }
-}
-
-void Dialog::dodatnoSortirajPoRednomBroju3(std::vector<Proces> &redCekanja)
-{
-    for (unsigned int i = 0; i < redCekanja.size() - 1; i++)
-    {
-        for (unsigned int j = i + 1; j < redCekanja.size(); j++)
-        {
-            if ((redCekanja[i].preostaloVrijemeIzvrsavanja == redCekanja[j].preostaloVrijemeIzvrsavanja) && (redCekanja[j].redniBroj < redCekanja[i].redniBroj))
-            {
-                std::swap(redCekanja[i], redCekanja[j]);
-            }
-        }
-    }
-}
 
 // pomocna funkcija koja provjerava da li jedan od procesa u redu cekanja ima krace vrijeme izvrsavanja od trenutnog procesa
 bool Dialog::imaKraceVrijemeIzvrsavanja(std::vector<Proces> &redCekanja, const Proces &trenutniProces)
@@ -754,6 +780,13 @@ void Dialog::sortirajProcesePoTrenutkuDolaska(Proces *niz)
 {
     std::sort(niz, niz + brojProcesa, [](const Proces &prethodnih, const Proces &sljedbenik)
               { return prethodnih.trenutakDolaska < sljedbenik.trenutakDolaska; });
+}
+
+// pomocna funkcija koja sortira vector po redoslijedu dolaska od elementa koji je dosao prvi do elementa koji je dosao posljednji
+void Dialog::sortirajProcesePoTrenutkuDolaska(std::vector<Proces> &vector)
+{
+    std::sort(vector.begin(), vector.end(), [](const Proces &prethodnik, const Proces &sljedbenik)
+              { return prethodnik.trenutakDolaska < sljedbenik.trenutakDolaska; });
 }
 
 // pomocna funkcija koja sortira niz po trajanju od najkraceg do najduzeg

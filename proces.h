@@ -14,4 +14,3 @@ public:
 };
 
 #endif // PROCES_H
-
