@@ -24,12 +24,12 @@ public:
     ~Dialog();
 
     int pocetakCiklusa();
-    bool nijeUSjfProcesi(std::vector<Proces> procesi, int redniBroj);
-    bool postojiKraceVrijemeIzvrsavanja(std::vector<Proces> redCekanja, Proces trenutniProces);
+    bool imaKraceVrijemeIzvrsavanja(std::vector<Proces>& redCekanja,const Proces& trenutniProces);
+    bool imaVeciPrioritet(std::vector<Proces>& redCekanja,const Proces& trenutniProces);
 private slots:
     void on_broj_procesa_comboBox_currentIndexChanged(const QString &broj);
     void on_nacrtajDijagramBtn_clicked();
-    void on_algoritam_comboBox_currentTextChanged(const QString &arg1);
+    void on_algoritam_comboBox_currentIndexChanged(int index);
 
 private:
     Ui::Dialog *ui;
@@ -40,27 +40,36 @@ private:
     float const DUZINA_SCENE = 730;
     QSpinBox *dolazakUCiklusu[9];
     QSpinBox *trajanjeCiklusa[9];
-    QSpinBox *prioritetCiklusa[9];
+    QSpinBox *prioritetProcesa[9];
     QLabel *procesiLabel[9];
     Proces procesi[9];
-    std::vector<Proces> redIzvrsavanja;
+    std::vector<Proces> redoslijedIzvrsavanja;
+    int ukupnoTrajanjeProcesa();
 
     void nacrtajScenu();
     void podesiUIElemente();
     void inicijalizirajBrojProcesa();
     void postaviUIElementeUNizove();
-    void nacrtajProcesText();
-    void nacrtajProces();
-    void nacrtajFCFS();
-    void nacrtajSJF();
-
     void napraviNizObjekataProces();
-    void sortirajProcesePoTrenutkuDolaska(Proces *niz);
-    void sortirajProcesePoTrajanju(Proces *niz);
-    std::vector<Proces> sortirajProcesePoTrajanjuVector(std::vector<Proces> vector);
-    void pripremiSJF();
+    void nacrtajProcesText();
+    void nacrtajProceseZaOdabraniAlgoritam();
 
+    void pripremiFCFS();
+    void pripremiSJF();
     void pripremiSJFsaPretpaznjenjem();
+    void pripremiRR();
+    void pripremiPrioritet();
+    void pripremiPrioritetSaPretpraznjenjem();
+    void nacrtajAlgoritam();
+
+    void sortirajProcesePoTrenutkuDolaska(Proces *niz);
+    void sortirajProcesePoTrenutkuDolaska(std::vector<Proces> &vector);
+    void sortirajProcesePoTrajanju(Proces *niz);
+    void sortirajProcesePoTrajanju(std::vector<Proces> &vector);
+    void sortirajProcesePoPrioritetu(std::vector<Proces> &vector);
+
+    void sortirajProcesePoRednomBroju(std::vector<Proces> &vector);
+    void dodatnoSortirajPoRednomBroju(std::string tipSortiranja, std::vector<Proces> &redCekanja);
 };
 
 #endif // DIALOG_H
