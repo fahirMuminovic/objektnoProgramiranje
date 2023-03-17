@@ -30,7 +30,9 @@ public:
 private slots:
     void on_broj_procesa_comboBox_currentIndexChanged(const QString &broj);
     void on_nacrtajDijagramBtn_clicked();
-    void on_algoritam_comboBox_currentTextChanged(const QString &arg1);
+//    void on_algoritam_comboBox_currentTextChanged(const QString &arg1);
+
+    void on_algoritam_comboBox_currentIndexChanged(int index);
 
 private:
     Ui::Dialog *ui;
@@ -65,11 +67,14 @@ private:
     void sortirajProcesePoTrenutkuDolaska(Proces *niz);
     void sortirajProcesePoTrajanju(Proces *niz);
 
-    void dodatnoSortiraj(std::vector<Proces> &redCekanja);
+    void dodatnoSortirajPoRednomBroju(std::vector<Proces> &redCekanja);
     void sortirajProcesePoPrioritetu(std::vector<Proces> &vector);
     void sortirajProcesePoTrajanju(std::vector<Proces> &vector);
     int ukupnoTrajanjeProcesa();
     void sortirajProcesePoRednomBroju(std::vector<Proces> &vector);
+    void dodatnoSortirajPoRednomBroju2(std::vector<Proces> &redCekanja);
+    void dodatnoSortirajPoRednomBroju3(std::vector<Proces> &redCekanja);
+    bool istoPreostaloVrijeme(std::vector<Proces> &redCekanja);
 };
 
 #endif // DIALOG_H
