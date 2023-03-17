@@ -6,7 +6,7 @@
 #include <vector>
 
 Dialog::Dialog(QWidget *parent) : QDialog(parent),
-    ui(new Ui::Dialog)
+                                  ui(new Ui::Dialog)
 {
     ui->setupUi(this);
 
@@ -178,9 +178,13 @@ void Dialog::nacrtajProceseZaOdabraniAlgoritam()
 
     case 1: // SJF algoritam
         if (ui->sa_pretpraznjenjem_radioButton->isChecked())
+        {
             pripremiSJFsaPretpaznjenjem();
+        }
         else
+        {
             pripremiSJF();
+        }
 
         nacrtajAlgoritam();
         break;
@@ -192,9 +196,13 @@ void Dialog::nacrtajProceseZaOdabraniAlgoritam()
 
     case 3: // Prioritet algoritam
         if (ui->sa_pretpraznjenjem_radioButton->isChecked())
+        {
             pripremiPrioritetSaPretpraznjenjem();
+        }
         else
+        {
             pripremiPrioritet();
+        }
 
         nacrtajAlgoritam();
         break;
@@ -214,9 +222,10 @@ void Dialog::pripremiFCFS()
     redCekanja.clear();
     redoslijedIzvrsavanja.clear();
 
-    for(int ciklus = pocetakCiklusa(); ciklus < ukupnoTrajanjeProcesa(); ciklus++){
+    for (int ciklus = pocetakCiklusa(); ciklus < ukupnoTrajanjeProcesa(); ciklus++)
+    {
         // ubaci procese koji dolaze u ovom ciklusu u red cekanja
-        for (int i = 0; i < brojProcesa; i++ )
+        for (int i = 0; i < brojProcesa; i++)
         {
             if (procesi[i].trenutakDolaska == ciklus)
             {
@@ -224,7 +233,8 @@ void Dialog::pripremiFCFS()
             }
         }
 
-        if(!redCekanja.empty()){
+        if (!redCekanja.empty())
+        {
             // ukoliko dva procesa dolaze u istom ciklusu uzima se onaj koji ima manji redni broj
             dodatnoSortirajPoRednomBroju2(redCekanja);
 
@@ -425,7 +435,6 @@ void Dialog::pripremiRR()
                 // izvrsi trenutni proces jednom
                 trenutniRedIzvrsavanja.front().preostaloVrijemeIzvrsavanja -= 1;
                 trenutniRedIzvrsavanja.front().burst = i + 1; // upisi burst time
-
             }
             else
             {
@@ -597,8 +606,9 @@ void Dialog::nacrtajAlgoritam()
     bool saPretpraznjenjem = ui->sa_pretpraznjenjem_radioButton->isChecked();
 
     // izracunaj ukupno trajanje procesa
-    float ukupnoTrajanjeProcesa= 0;
-    for(auto proces : redoslijedIzvrsavanja){
+    float ukupnoTrajanjeProcesa = 0;
+    for (auto proces : redoslijedIzvrsavanja)
+    {
         ukupnoTrajanjeProcesa += saPretpraznjenjem ? proces.burst : proces.trajanje;
     }
 
@@ -621,7 +631,8 @@ void Dialog::nacrtajAlgoritam()
         scene->addRect(procesEl, okvirProcesa, bojaProcesa);
 
         // dodaj isprekidanu liniju nakon kvadrata koji predstavlja proces, osim za zadnji proces
-        if (koordinataX + duzina <= DUZINA_SCENE){
+        if (koordinataX + duzina <= DUZINA_SCENE)
+        {
             scene->addLine(koordinataX + duzina, 0, koordinataX + duzina, 440, isprekidanaLinija);
         }
 
@@ -644,14 +655,14 @@ int Dialog::ukupnoTrajanjeProcesa()
 }
 
 // pomocna funkcija koja sortira procese po prioritetu gdje manji broj oznacava veci prioritet
-void Dialog::sortirajProcesePoPrioritetu(std::vector<Proces>& vector)
+void Dialog::sortirajProcesePoPrioritetu(std::vector<Proces> &vector)
 {
     std::sort(vector.begin(), vector.end(), [](const Proces &prethodnik, const Proces &sljedbenik)
-    { return prethodnik.prioritet < sljedbenik.prioritet; });
+              { return prethodnik.prioritet < sljedbenik.prioritet; });
 }
 
 // pomocna funkcija koja se koristi za dodatno sortiranje ukoliko procesi u redu cekanja imaju isti prioritet
-void Dialog::dodatnoSortirajPoRednomBroju(std::vector<Proces>& redCekanja)
+void Dialog::dodatnoSortirajPoRednomBroju(std::vector<Proces> &redCekanja)
 {
     for (unsigned int i = 0; i < redCekanja.size() - 1; i++)
     {
@@ -665,7 +676,8 @@ void Dialog::dodatnoSortirajPoRednomBroju(std::vector<Proces>& redCekanja)
     }
 }
 
-void Dialog::dodatnoSortirajPoRednomBroju2(std::vector<Proces>& redCekanja){
+void Dialog::dodatnoSortirajPoRednomBroju2(std::vector<Proces> &redCekanja)
+{
     for (unsigned int i = 0; i < redCekanja.size() - 1; i++)
     {
         for (unsigned int j = i + 1; j < redCekanja.size(); j++)
@@ -678,8 +690,8 @@ void Dialog::dodatnoSortirajPoRednomBroju2(std::vector<Proces>& redCekanja){
     }
 }
 
-
-void Dialog::dodatnoSortirajPoRednomBroju3(std::vector<Proces>& redCekanja){
+void Dialog::dodatnoSortirajPoRednomBroju3(std::vector<Proces> &redCekanja)
+{
     for (unsigned int i = 0; i < redCekanja.size() - 1; i++)
     {
         for (unsigned int j = i + 1; j < redCekanja.size(); j++)
@@ -692,9 +704,8 @@ void Dialog::dodatnoSortirajPoRednomBroju3(std::vector<Proces>& redCekanja){
     }
 }
 
-
 // pomocna funkcija koja provjerava da li jedan od procesa u redu cekanja ima krace vrijeme izvrsavanja od trenutnog procesa
-bool Dialog::imaKraceVrijemeIzvrsavanja(std::vector<Proces>& redCekanja, const Proces& trenutniProces)
+bool Dialog::imaKraceVrijemeIzvrsavanja(std::vector<Proces> &redCekanja, const Proces &trenutniProces)
 {
     for (auto proces : redCekanja)
     {
@@ -706,9 +717,8 @@ bool Dialog::imaKraceVrijemeIzvrsavanja(std::vector<Proces>& redCekanja, const P
     return false;
 }
 
-
 // pomocna funkcija koja provjerava da li jedan od procesa u redu cekanja ima veci prioritet od trenutnog procesa
-bool Dialog::imaVeciPrioritet(std::vector<Proces>& redCekanja,const Proces& trenutniProces)
+bool Dialog::imaVeciPrioritet(std::vector<Proces> &redCekanja, const Proces &trenutniProces)
 {
     for (const auto proces : redCekanja)
     {
@@ -733,37 +743,31 @@ int Dialog::pocetakCiklusa()
 }
 
 // pomocna funkcija koja sortira procese po rednom broju od manjeg ka vecem
-void Dialog::sortirajProcesePoRednomBroju(std::vector<Proces>& vector)
+void Dialog::sortirajProcesePoRednomBroju(std::vector<Proces> &vector)
 {
     std::sort(vector.begin(), vector.end(), [](const Proces &prethodnik, const Proces &sljedbenik)
-    { return prethodnik.redniBroj < sljedbenik.redniBroj; });
+              { return prethodnik.redniBroj < sljedbenik.redniBroj; });
 }
-
-
 
 // pomocna funkcija koja sortira niz po redoslijedu dolaska od elementa koji je dosao prvi do elementa koji je dosao posljednji
 void Dialog::sortirajProcesePoTrenutkuDolaska(Proces *niz)
 {
     std::sort(niz, niz + brojProcesa, [](const Proces &prethodnih, const Proces &sljedbenik)
-    {
-        return prethodnih.trenutakDolaska < sljedbenik.trenutakDolaska;
-    });
+              { return prethodnih.trenutakDolaska < sljedbenik.trenutakDolaska; });
 }
 
 // pomocna funkcija koja sortira niz po trajanju od najkraceg do najduzeg
 void Dialog::sortirajProcesePoTrajanju(Proces *niz)
 {
     std::sort(niz, niz + brojProcesa, [](const Proces &prethodnih, const Proces &sljedbenik)
-    {
-        return prethodnih.trajanje < sljedbenik.trajanje;
-    });
+              { return prethodnih.trajanje < sljedbenik.trajanje; });
 }
 
 // pomocna funkcija koja sortira vektor po trajanju od najkraceg do najduzeg
-void Dialog::sortirajProcesePoTrajanju(std::vector<Proces>& vector)
+void Dialog::sortirajProcesePoTrajanju(std::vector<Proces> &vector)
 {
     std::sort(vector.begin(), vector.end(), [](const Proces &prethodnik, const Proces &sljedbenik)
-    { return prethodnik.trajanje < sljedbenik.trajanje; });
+              { return prethodnik.trajanje < sljedbenik.trajanje; });
 }
 
 // UI funkcija koja u zavisnosti od koriscki odabranog broja procesa prikazuje ili sakriva UI elemente
