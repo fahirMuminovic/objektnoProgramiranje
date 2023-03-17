@@ -664,49 +664,7 @@ void Dialog::sortirajProcesePoPrioritetu(std::vector<Proces> &vector)
               { return prethodnik.prioritet < sljedbenik.prioritet; });
 }
 
-// pomocna funkcija koja se koristi za dodatno sortiranje ukoliko procesi u redu cekanja imaju isti prioritet
-//void Dialog::dodatnoSortirajPoRednomBroju(std::vector<Proces> &redCekanja)
-//{
-//    for (unsigned int i = 0; i < redCekanja.size() - 1; i++)
-//    {
-//        for (unsigned int j = i + 1; j < redCekanja.size(); j++)
-//        {
-//            if (redCekanja[i].prioritet == redCekanja[j].prioritet && redCekanja[j].redniBroj < redCekanja[i].redniBroj)
-//            {
-//                std::swap(redCekanja[i], redCekanja[j]);
-//            }
-//        }
-//    }
-//}
-
-//void Dialog::dodatnoSortirajPoRednomBroju2(std::vector<Proces> &redCekanja)
-//{
-//    for (unsigned int i = 0; i < redCekanja.size() - 1; i++)
-//    {
-//        for (unsigned int j = i + 1; j < redCekanja.size(); j++)
-//        {
-//            if (redCekanja[i].trenutakDolaska == redCekanja[j].trenutakDolaska && redCekanja[j].redniBroj < redCekanja[i].redniBroj)
-//            {
-//                std::swap(redCekanja[i], redCekanja[j]);
-//            }
-//        }
-//    }
-//}
-
-//void Dialog::dodatnoSortirajPoRednomBroju3(std::vector<Proces> &redCekanja)
-//{
-//    for (unsigned int i = 0; i < redCekanja.size() - 1; i++)
-//    {
-//        for (unsigned int j = i + 1; j < redCekanja.size(); j++)
-//        {
-//            if ((redCekanja[i].preostaloVrijemeIzvrsavanja == redCekanja[j].preostaloVrijemeIzvrsavanja) && (redCekanja[j].redniBroj < redCekanja[i].redniBroj))
-//            {
-//                std::swap(redCekanja[i], redCekanja[j]);
-//            }
-//        }
-//    }
-//}
-
+// pomocna funkcija koja se koristi za dodatno sortiranje ukoliko procesi u redu cekanja imaju isti prioritet, trenutak dolaska ili preostalo vrijeme
 void Dialog::dodatnoSortirajPoRednomBroju(std::string tipSortiranja, std::vector<Proces> &redCekanja)
 {
     for (unsigned int i = 0; i < redCekanja.size() - 1; i++)
