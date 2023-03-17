@@ -323,10 +323,7 @@ void Dialog::pripremiSJFsaPretpaznjenjem()
         if (redCekanja.size() > 1)
         {
             sortirajProcesePoTrajanju(redCekanja);
-
-            if(istoPreostaloVrijeme(redCekanja)){
-                sortirajProcesePoRednomBroju(redCekanja);
-            }
+            dodatnoSortirajPoRednomBroju3(redCekanja);
         }
 
         // ukoliko je ovo prvi i jedini proces koji dolazi onda ga odma dodajemo u red izvrsavanja
@@ -639,9 +636,9 @@ void Dialog::nacrtajAlgoritam()
 int Dialog::ukupnoTrajanjeProcesa()
 {
     int ukupnoTrajanje = 0;
-    for (auto proces : procesi)
+    for (int i = 0; i < brojProcesa; i++)
     {
-        ukupnoTrajanje += proces.trajanje;
+        ukupnoTrajanje += procesi[i].trajanje;
     }
     return ukupnoTrajanje;
 }
@@ -687,7 +684,7 @@ void Dialog::dodatnoSortirajPoRednomBroju3(std::vector<Proces>& redCekanja){
     {
         for (unsigned int j = i + 1; j < redCekanja.size(); j++)
         {
-            if (redCekanja[j].redniBroj < redCekanja[i].redniBroj)
+            if ((redCekanja[i].preostaloVrijemeIzvrsavanja == redCekanja[j].preostaloVrijemeIzvrsavanja) && (redCekanja[j].redniBroj < redCekanja[i].redniBroj))
             {
                 std::swap(redCekanja[i], redCekanja[j]);
             }
@@ -695,19 +692,6 @@ void Dialog::dodatnoSortirajPoRednomBroju3(std::vector<Proces>& redCekanja){
     }
 }
 
-bool Dialog::istoPreostaloVrijeme(std::vector<Proces>& redCekanja){
-    for (unsigned int i = 0; i < redCekanja.size() - 1; i++)
-    {
-        for (unsigned int j = i + 1; j < redCekanja.size(); j++)
-        {
-            if (redCekanja[i].preostaloVrijemeIzvrsavanja == redCekanja[j].preostaloVrijemeIzvrsavanja)
-            {
-                return true;
-            }
-        }
-    }
-    return false;
-}
 
 // pomocna funkcija koja provjerava da li jedan od procesa u redu cekanja ima krace vrijeme izvrsavanja od trenutnog procesa
 bool Dialog::imaKraceVrijemeIzvrsavanja(std::vector<Proces>& redCekanja, const Proces& trenutniProces)

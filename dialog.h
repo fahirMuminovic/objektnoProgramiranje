@@ -74,7 +74,6 @@ private:
     void sortirajProcesePoRednomBroju(std::vector<Proces> &vector);
     void dodatnoSortirajPoRednomBroju2(std::vector<Proces> &redCekanja);
     void dodatnoSortirajPoRednomBroju3(std::vector<Proces> &redCekanja);
-    bool istoPreostaloVrijeme(std::vector<Proces> &redCekanja);
 };
 
 #endif // DIALOG_H
