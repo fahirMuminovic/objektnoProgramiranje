@@ -406,66 +406,54 @@ void Dialog::pripremiRR()
             // ukoliko proces dolazi u ovom ciklusu
             if (procesi[i].trenutakDolaska == ciklus)
             {
-                redCekanja.insert(redCekanja.begin(), procesi[i]); // dodaj proces u red cekanja
+                redCekanja.push_back(procesi[i]); // dodaj proces u red cekanja
             }
         }
 
-        trenutniRedIzvrsavanja.insert(trenutniRedIzvrsavanja.begin(), redCekanja.front()); // u trenutni red izvrsavanja ubaci prvi proces iz reda cekanja
-        redCekanja.erase(redCekanja.begin());                                              // obrisi proces iz reda cekanja
-
-        // for petlja koja simulira izvrsavanje procesa za duzinu trajanja TIME_QUANTUMA
-        for (int i = 0; i < TIME_QUANTUM; i++)
+        // ukoliko u trenutnom redu izvrsavanja nema procesa
+        if (trenutniRedIzvrsavanja.empty())
         {
-
-            // slucaj kada je proces u potpunosti izvrsen prije isteka TIME_QUANTUMA
-            // kada proces zavrsi prije time quantuma tada se uzima sljedeci proces iz reda cekanja
-            if (trenutniRedIzvrsavanja.front().preostaloVrijemeIzvrsavanja <= 0)
-            {
-
-                // slucaj kada se proces u potpunosti izvrsi i nema sljedeceg procesa u redu cekanja
-                if (trenutniRedIzvrsavanja.front().preostaloVrijemeIzvrsavanja <= 0 && redCekanja.empty())
-                {
-                    break;
-                }
-
-                redoslijedIzvrsavanja.push_back(trenutniRedIzvrsavanja.front()); // dodaj upravo izvrseni proces u redoslijedIzvrsavanja
-                trenutniRedIzvrsavanja.erase(trenutniRedIzvrsavanja.begin());    // obrisi proces iz trenutnog reda izvrsavanja
-
-                trenutniRedIzvrsavanja.insert(trenutniRedIzvrsavanja.begin(), redCekanja.front()); // dodaj prvi proces iz reda cekanja u trenutni red izvrsavanja
-                redCekanja.erase(redCekanja.begin());                                              // izbrisi proces koji se trenutno izvrsava iz reda cekanja
-
-                i = 0; // resetuj TIME_QUANTUM
-
-                // izvrsi trenutni proces jednom
-                trenutniRedIzvrsavanja.front().preostaloVrijemeIzvrsavanja -= 1;
-                trenutniRedIzvrsavanja.front().burst = i + 1; // upisi burst time
-            }
-            else
-            {
-                // izvrsi trenutni proces za vrijeme trajanja TIME_QUANTUMA tj. simuliraj izvrsavanje procesa
-                trenutniRedIzvrsavanja.front().preostaloVrijemeIzvrsavanja -= 1; // umanji preostalo vrijeme izvrsavanja procesa
-                trenutniRedIzvrsavanja.front().burst = i + 1;                    // upisi burst time
-            }
+            // dodaj prvi proces iz reda cekanja u trenutni red izvrsavanja
+            trenutniRedIzvrsavanja.push_back(redCekanja.front()); // dodaj proces u trenutni red izvrsavanja
+            redCekanja.erase(redCekanja.begin()); // obrisi proces iz reda cekanja
         }
-
-        if (trenutniRedIzvrsavanja.front().preostaloVrijemeIzvrsavanja > 0)
-        {
-            // ukoliko proces nije u potpunosti zavrsio sa izvrsavanjem dodaj ga na kraj reda cekanja
-            redCekanja.push_back(trenutniRedIzvrsavanja.front());
-        }
-
-        redoslijedIzvrsavanja.push_back(trenutniRedIzvrsavanja.front()); // dodaj trenutni proces u redoslijed izvrsavanja
-        trenutniRedIzvrsavanja.clear();                                  // ocisti trenutni red izvrsavanja
 
         // provjeri koliko je vremena preostalo da se procesi zavrse
         for (auto it : redCekanja)
         {
             preostaloVrijemeIzvrsavanjaSvihProcesa += it.preostaloVrijemeIzvrsavanja;
         }
+        for (auto it : trenutniRedIzvrsavanja)
+        {
+            preostaloVrijemeIzvrsavanjaSvihProcesa += it.preostaloVrijemeIzvrsavanja;
+        }
+
+        // proces je izvrsen
+        if (trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja <= 0)
+        {
+            redoslijedIzvrsavanja.push_back(trenutniRedIzvrsavanja.back()); // dodaj proces u redoslijed izvrsavanja
+            trenutniRedIzvrsavanja.clear(); // ocisti trenutni red izvrsavanja
+        }
+        // proces nije izvrsen, TIME_QUANTUM nije isteko
+        else if (trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja > 0 && trenutniRedIzvrsavanja.back().burst != TIME_QUANTUM)
+        {
+            // umanji vrijeme izvrsavanja procesa koji se trenutno izvrsava, povecaj mu burst
+            trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja -= 1;
+            trenutniRedIzvrsavanja.back().burst += 1;
+        }
+        // proces nije izvrsen, TIME_QUANTUM je isteko
+        else if (trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja > 0 && trenutniRedIzvrsavanja.back().burst == TIME_QUANTUM)
+        {
+            redoslijedIzvrsavanja.push_back(trenutniRedIzvrsavanja.back()); // dodaj proces u redoslijed izvrsavanja
+
+            trenutniRedIzvrsavanja.back().burst = 0; // resetuj burst procesa
+            redCekanja.push_back(trenutniRedIzvrsavanja.back()); // dodaj proces ponovo u red cekanja
+
+            trenutniRedIzvrsavanja.clear(); // ocisti trenutni red izvrsavanja
+        }
 
         // inkrementiraj ciklus
         ciklus++;
-
     } while (preostaloVrijemeIzvrsavanjaSvihProcesa > 0);
 }
 
