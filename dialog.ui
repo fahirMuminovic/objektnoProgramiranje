@@ -116,6 +116,9 @@
             <property name="currentText">
              <string>9</string>
             </property>
+            <property name="maxCount">
+             <number>9</number>
+            </property>
             <item>
              <property name="text">
               <string>4</string>
@@ -569,9 +572,6 @@
     </item>
    </layout>
   </widget>
-  <zorder>horizontalLayoutWidget_3</zorder>
-  <zorder>verticalLayoutWidget_5</zorder>
-  <zorder>verticalLayoutWidget_3</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
