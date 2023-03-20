@@ -473,7 +473,7 @@ void Dialog::pripremiPrioritet()
         {
             if (procesi[i].trenutakDolaska == ciklus)
             {
-                redCekanja.insert(redCekanja.begin(), procesi[i]);
+                redCekanja.push_back(procesi[i]); // dodaj proces u red cekanja
             }
         }
 
@@ -730,7 +730,10 @@ void Dialog::dodatnoSortirajPoRednomBroju(std::string tipSortiranja, std::vector
     {
         for (unsigned int j = i + 1; j < redCekanja.size(); j++)
         {
-            if (tipSortiranja == "Prioritet" && redCekanja[i].prioritet == redCekanja[j].prioritet && redCekanja[j].redniBroj < redCekanja[i].redniBroj)
+            if (tipSortiranja == "Prioritet"
+                && redCekanja[i].prioritet == redCekanja[j].prioritet
+                && redCekanja[i].trenutakDolaska == redCekanja[j].trenutakDolaska
+                && redCekanja[j].redniBroj < redCekanja[i].redniBroj)
             {
                 std::swap(redCekanja[i], redCekanja[j]);
             }
@@ -738,7 +741,10 @@ void Dialog::dodatnoSortirajPoRednomBroju(std::string tipSortiranja, std::vector
             {
                 std::swap(redCekanja[i], redCekanja[j]);
             }
-            else if (tipSortiranja == "Preostalo Vrijeme" && redCekanja[i].preostaloVrijemeIzvrsavanja == redCekanja[j].preostaloVrijemeIzvrsavanja && redCekanja[j].redniBroj < redCekanja[i].redniBroj)
+            else if (tipSortiranja == "Preostalo Vrijeme"
+                     && redCekanja[i].preostaloVrijemeIzvrsavanja == redCekanja[j].preostaloVrijemeIzvrsavanja
+                     && redCekanja[i].trenutakDolaska == redCekanja[j].trenutakDolaska
+                     && redCekanja[j].redniBroj < redCekanja[i].redniBroj)
             {
                 std::swap(redCekanja[i], redCekanja[j]);
             }
