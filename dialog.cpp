@@ -435,44 +435,42 @@ void Dialog::pripremiRR()
         }
         qDebug()<<"###########redCekanja########";
 
-        // ukoliko u trenutnom redu izvrsavanja nema procesa
-        if (trenutniRedIzvrsavanja.empty())
-        {
-            // dodaj prvi proces iz reda cekanja u trenutni red izvrsavanja
-            trenutniRedIzvrsavanja.push_back(waitStanje.front()); // dodaj proces u trenutni red izvrsavanja
-            waitStanje.erase(waitStanje.begin()); // obrisi proces iz reda cekanja
-        }
+//        Proces trenutniProces = waitStanje.front();
 
-        qDebug()<<"###########trenutniRedIzvrsavanja########";
-        for(auto it :trenutniRedIzvrsavanja)
-        {
-            qDebug()<<"Proces P"<<it.redniBroj+1;
-            qDebug()<<"Proces P"<<it.redniBroj+1<<".burst"<<it.burst;
-            qDebug()<<"Proces P"<<it.redniBroj+1<<".preostaloVrijemeIzvrsavanja"<<it.preostaloVrijemeIzvrsavanja;
-            qDebug()<<"Proces P"<<it.redniBroj+1<<".prioritet"<<it.prioritet;
-            qDebug()<<"Proces P"<<it.redniBroj+1<<".trajanje"<<it.trajanje;
-            qDebug()<<"Proces P"<<it.redniBroj+1<<".trenutakDolaska"<<it.trenutakDolaska;
-        }
-        qDebug()<<"###########redCekanja########";
+        // ukoliko u trenutnom redu izvrsavanja nema procesa
+//        if (trenutniRedIzvrsavanja.empty())
+//        {
+//            // dodaj prvi proces iz reda cekanja u trenutni red izvrsavanja
+//            trenutniRedIzvrsavanja.push_back(waitStanje.front()); // dodaj proces u trenutni red izvrsavanja
+//            waitStanje.erase(waitStanje.begin()); // obrisi proces iz reda cekanja
+//        }
 
         // umanji vrijeme izvrsavanja procesa koji se trenutno izvrsava, povecaj mu burst
-        trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja -= 1;
-        trenutniRedIzvrsavanja.back().burst += 1;
+//        trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja -= 1;
+//        trenutniRedIzvrsavanja.back().burst += 1;
+
+        waitStanje.front().preostaloVrijemeIzvrsavanja -= 1;
+        waitStanje.front().burst += 1;
 
         // proces je izvrsen
-        if (trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja <= 0 || trenutniRedIzvrsavanja.back().burst == TIME_QUANTUM)
+//        if (trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja <= 0 || trenutniRedIzvrsavanja.back().burst == TIME_QUANTUM)
+        if (waitStanje.front().preostaloVrijemeIzvrsavanja <= 0 || waitStanje.front().burst == TIME_QUANTUM)
         {
-            qDebug()<<"Proces P"<<trenutniRedIzvrsavanja.back().redniBroj+1<<" je izvrsen";
-            redoslijedIzvrsavanja.push_back(trenutniRedIzvrsavanja.back()); // dodaj proces u redoslijed izvrsavanja
+            qDebug()<<"Proces P"<<waitStanje.front().redniBroj+1<<" je izvrsen";
+//            redoslijedIzvrsavanja.push_back(trenutniRedIzvrsavanja.back()); // dodaj proces u redoslijed izvrsavanja
+            redoslijedIzvrsavanja.push_back(waitStanje.front()); // dodaj proces u redoslijed izvrsavanja
 
-            if(trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja > 0)
+//            if(trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja > 0)
+            if(waitStanje.front().preostaloVrijemeIzvrsavanja > 0)
             {
-                trenutniRedIzvrsavanja.back().burst = 0; // resetuj burst procesa
-                readyStanje.push_back(trenutniRedIzvrsavanja.back()); // dodaj proces u ready stanje
+//                trenutniRedIzvrsavanja.back().burst = 0; // resetuj burst procesa
+//                readyStanje.push_back(trenutniRedIzvrsavanja.back()); // dodaj proces u ready stanje
+                waitStanje.front().burst = 0; // resetuj burst procesa
+                readyStanje.push_back(waitStanje.front()); // dodaj proces u ready stanje
 
             }
 
-                trenutniRedIzvrsavanja.clear(); // ocisti trenutni red izvrsavanja
+                waitStanje.erase(waitStanje.begin());
 
             qDebug()<<"********************************************";
         }
@@ -484,10 +482,10 @@ void Dialog::pripremiRR()
         {
             preostaloVrijemeIzvrsavanjaSvihProcesa += it.preostaloVrijemeIzvrsavanja;
         }
-        for (auto it : trenutniRedIzvrsavanja)
-        {
-            preostaloVrijemeIzvrsavanjaSvihProcesa += it.preostaloVrijemeIzvrsavanja;
-        }
+//        for (auto it : trenutniRedIzvrsavanja)
+//        {
+//            preostaloVrijemeIzvrsavanjaSvihProcesa += it.preostaloVrijemeIzvrsavanja;
+//        }
 
         // inkrementiraj ciklus
         ciklus++;
