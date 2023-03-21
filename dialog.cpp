@@ -528,52 +528,30 @@ void Dialog::pripremiPrioritetSaPretpraznjenjem()
             }
         }
 
-        // ukoliko je vise procesa u redu cekanja sortiraj red cekanja po trajanju procesa
-        if (redCekanja.capacity() > 1)
+        // ukoliko je trenutni proces zavrsio sa izvrsavanjem
+        if (redCekanja.front().preostaloVrijemeIzvrsavanja <= 0)
         {
-            sortirajProcesePoPrioritetu(redCekanja);
+            redoslijedIzvrsavanja.push_back(redCekanja.front()); // pomjeri proces iz reda cekanja u red izvrsavanja
+            redCekanja.erase(redCekanja.begin());                // obrisi dodani proces iz reda cekanja
         }
 
-        // ukoliko je ovo prvi i jedini proces koji dolazi onda ga odma dodajemo u red izvrsavanja
-        if (redoslijedIzvrsavanja.empty())
+        // ukoliko jedan od procesa u redu cekanja ima veci prioritet od trenutnog procesa
+        if (imaVeciPrioritet(redCekanja, redCekanja.front()))
         {
-            redoslijedIzvrsavanja.push_back(redCekanja.front());
-            redCekanja.erase(redCekanja.begin()); // obrisi proces iz reda cekanja
-        }
-
-        // ukoliko postoje procesi u redu cekanja i postoje procesi u redoslijeduIzrsavanja
-        else if (!redCekanja.empty() && !redoslijedIzvrsavanja.empty())
-        {
-            // ukoliko je trenutni proces zavrsio sa izvrsavanjem
-            if (redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja <= 0)
+            //  ukoliko proces koji se trenutno izvrsava nije gotov sa izvrsavanjem
+            if (redCekanja.front().preostaloVrijemeIzvrsavanja > 0)
             {
-                redoslijedIzvrsavanja.push_back(redCekanja.front()); // pomjeri proces iz reda cekanja u red izvrsavanja
-                redCekanja.erase(redCekanja.begin());                // obrisi dodani proces iz reda cekanja
-            }
-
-            // ukoliko jedan od procesa u redu cekanja ima krace vrijeme izvrsavanja od trenutnog procesa
-            else if (imaVeciPrioritet(redCekanja, redoslijedIzvrsavanja.back()))
-            {
-                //  ukoliko proces koji se trenutno izvrsava nije gotov sa izvrsavanjem
-                if (redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja > 0)
-                {
-                    redCekanja.push_back(redoslijedIzvrsavanja.back()); // dodaj proces u red cekanja
-                    redCekanja.back().burst = 0;                        // resetuj burst time za proces koji je upravo dodan u red cekanja
-                }
-
-                // dodaj prvi proces u redu cekanja u red izvrsavanja
-                redoslijedIzvrsavanja.push_back(redCekanja.front());
-                // obrisi proces ubaceni proces iz reda cekanja
+                redoslijedIzvrsavanja.push_back(redCekanja.front());   // dodaj proces u redoslijed izvrsavanja
+                redCekanja.front().burst = 0;                          // resetuj burst time za proces
+                redCekanja.push_back(redCekanja.front());              // dodaj proces u red cekanja
                 redCekanja.erase(redCekanja.begin());
             }
+            // sortiraj procese po prioritetu
+            sortirajProcesePoPrioritetu(redCekanja);
         }
-
         // smanji preostalo vrijeme izvrsavanja za trenutni proces
-        if (redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja > 0)
-        {
-            redoslijedIzvrsavanja.back().preostaloVrijemeIzvrsavanja -= 1;
-            redoslijedIzvrsavanja.back().burst += 1; // dodaj burst time
-        }
+        redCekanja.front().preostaloVrijemeIzvrsavanja -= 1;
+        redCekanja.front().burst += 1; // dodaj burst time
     }
 }
 
