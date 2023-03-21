@@ -1,10 +1,13 @@
-#include "dialog.h"
-#include "ui_dialog.h"
-#include "proces.h"
-#include <QDebug>
 #include <algorithm>
 #include <vector>
 #include <string>
+
+#include "dialog.h"
+#include "ui_dialog.h"
+#include "proces.h"
+
+#include <QDebug>
+
 
 Dialog::Dialog(QWidget *parent) : QDialog(parent),
                                   ui(new Ui::Dialog)
@@ -337,6 +340,7 @@ void Dialog::pripremiSJFsaPretpaznjenjem()
         if (redCekanja.size() > 1)
         {
             sortirajProcesePoTrajanju(redCekanja);
+            // slucaj kada dva procesa imaju isto preostalo vrijeme i isti trenutak dolaska
             dodatnoSortirajPoRednomBroju("Preostalo Vrijeme",redCekanja);
         }
 
@@ -389,8 +393,9 @@ void Dialog::pripremiRR()
 
     sortirajProcesePoTrenutkuDolaska(procesi); // sortiraj prvobitni niz po trenutku dolaska procesa
 
-    std::vector<Proces> redCekanja;
-    std::vector<Proces> trenutniRedIzvrsavanja; // sluzi za pohranu procesa koji se trenutno izvrsava
+    std::vector<Proces> redCekanja;  // sadrzi procese koji cekaju da dodju na red izvrsavanja
+    std::vector<Proces> readyStanje;  // sadrzi procese kojima je prekinuto izvrsavanje
+
     redCekanja.clear();                         // u slucaju da korisnik pokrece isti algoritam drugi put
     redoslijedIzvrsavanja.clear();              // u slucaju da korisnik pokrece isti algoritam drugi put
 
@@ -410,12 +415,29 @@ void Dialog::pripremiRR()
             }
         }
 
-        // ukoliko u trenutnom redu izvrsavanja nema procesa
-        if (trenutniRedIzvrsavanja.empty())
+        // ukoliko imamo procese u readyStanju dodajemo ih u red cekanja
+        if (!readyStanje.empty())
         {
-            // dodaj prvi proces iz reda cekanja u trenutni red izvrsavanja
-            trenutniRedIzvrsavanja.push_back(redCekanja.front()); // dodaj proces u trenutni red izvrsavanja
-            redCekanja.erase(redCekanja.begin()); // obrisi proces iz reda cekanja
+            redCekanja.push_back(readyStanje.front()); // dodaj proces u red cekanja
+            readyStanje.clear();
+        }
+
+        // "izvrsi" proces
+        redCekanja.front().preostaloVrijemeIzvrsavanja -= 1;
+        redCekanja.front().burst += 1;
+
+        // proces je izvrsen
+        if (redCekanja.front().preostaloVrijemeIzvrsavanja <= 0 || redCekanja.front().burst == TIME_QUANTUM)
+        {
+            redoslijedIzvrsavanja.push_back(redCekanja.front()); // dodaj proces u redoslijed izvrsavanja
+
+            if(redCekanja.front().preostaloVrijemeIzvrsavanja > 0)
+            {
+                redCekanja.front().burst = 0; // resetuj burst procesa
+                readyStanje.push_back(redCekanja.front()); // dodaj proces u ready stanje
+            }
+
+            redCekanja.erase(redCekanja.begin());  // obrisi trenutni proces iz reda cekanja
         }
 
         // provjeri koliko je vremena preostalo da se procesi zavrse
@@ -423,37 +445,10 @@ void Dialog::pripremiRR()
         {
             preostaloVrijemeIzvrsavanjaSvihProcesa += it.preostaloVrijemeIzvrsavanja;
         }
-        for (auto it : trenutniRedIzvrsavanja)
-        {
-            preostaloVrijemeIzvrsavanjaSvihProcesa += it.preostaloVrijemeIzvrsavanja;
-        }
-
-        // proces je izvrsen
-        if (trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja <= 0)
-        {
-            redoslijedIzvrsavanja.push_back(trenutniRedIzvrsavanja.back()); // dodaj proces u redoslijed izvrsavanja
-            trenutniRedIzvrsavanja.clear(); // ocisti trenutni red izvrsavanja
-        }
-        // proces nije izvrsen, TIME_QUANTUM nije isteko
-        else if (trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja > 0 && trenutniRedIzvrsavanja.back().burst != TIME_QUANTUM)
-        {
-            // umanji vrijeme izvrsavanja procesa koji se trenutno izvrsava, povecaj mu burst
-            trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja -= 1;
-            trenutniRedIzvrsavanja.back().burst += 1;
-        }
-        // proces nije izvrsen, TIME_QUANTUM je isteko
-        else if (trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja > 0 && trenutniRedIzvrsavanja.back().burst == TIME_QUANTUM)
-        {
-            redoslijedIzvrsavanja.push_back(trenutniRedIzvrsavanja.back()); // dodaj proces u redoslijed izvrsavanja
-
-            trenutniRedIzvrsavanja.back().burst = 0; // resetuj burst procesa
-            redCekanja.push_back(trenutniRedIzvrsavanja.back()); // dodaj proces ponovo u red cekanja
-
-            trenutniRedIzvrsavanja.clear(); // ocisti trenutni red izvrsavanja
-        }
 
         // inkrementiraj ciklus
         ciklus++;
+
     } while (preostaloVrijemeIzvrsavanjaSvihProcesa > 0);
 }
 
@@ -537,7 +532,6 @@ void Dialog::pripremiPrioritetSaPretpraznjenjem()
         if (redCekanja.capacity() > 1)
         {
             sortirajProcesePoPrioritetu(redCekanja);
-            // ukoliko dva procesa imaju isti prioritet i vrijeme dolaska
         }
 
         // ukoliko je ovo prvi i jedini proces koji dolazi onda ga odma dodajemo u red izvrsavanja

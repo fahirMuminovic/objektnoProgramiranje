@@ -1,9 +1,8 @@
 #ifndef PROCES_H
 #define PROCES_H
 
-class Proces
+struct Proces
 {
-public:
     Proces();
     int trajanje;
     int trenutakDolaska;
@@ -14,3 +13,4 @@ public:
 };
 
 #endif // PROCES_H
+
