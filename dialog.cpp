@@ -510,11 +510,9 @@ void Dialog::pripremiPrioritetSaPretpraznjenjem()
     sortirajProcesePoTrenutkuDolaska(procesi); // sortiraj prvobitni niz po trenutku dolaska procesa
 
     std::vector<Proces> redCekanja;
-    std::vector<Proces> trenutniRedIzvrsavanja;
 
     // u slucaju da korisnik pokrece isti algoritam drugi put
     redCekanja.clear();
-    trenutniRedIzvrsavanja.clear();
     redoslijedIzvrsavanja.clear();
 
     for (int ciklus = pocetakCiklusa(); ciklus <= ukupnoTrajanjeProcesa(); ciklus++)
