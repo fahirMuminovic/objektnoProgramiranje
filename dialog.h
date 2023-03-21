@@ -23,18 +23,6 @@ public:
     explicit Dialog(QWidget *parent = 0);
     ~Dialog();
 
-    int pocetakCiklusa();
-    bool imaKraceVrijemeIzvrsavanja(std::vector<Proces>& redCekanja,const Proces& trenutniProces);
-    bool imaVeciPrioritet(std::vector<Proces>& redCekanja,const Proces& trenutniProces);
-private slots:
-    void on_broj_procesa_comboBox_currentIndexChanged(const QString &broj);
-    void on_nacrtajDijagramBtn_clicked();
-    void on_algoritam_comboBox_currentIndexChanged(int index);
-
-private:
-    Ui::Dialog *ui;
-    QGraphicsScene *scene;
-
     int brojProcesa;
     float const VISINA_SCENE = 390;
     float const DUZINA_SCENE = 730;
@@ -45,6 +33,16 @@ private:
     Proces procesi[9];
     std::vector<Proces> redoslijedIzvrsavanja;
     int ukupnoTrajanjeProcesa();
+    int pocetakCiklusa();
+
+private slots:
+    void on_broj_procesa_comboBox_currentIndexChanged(const QString &broj);
+    void on_nacrtajDijagramBtn_clicked();
+    void on_algoritam_comboBox_currentIndexChanged(int index);
+
+private:
+    Ui::Dialog *ui;
+    QGraphicsScene *scene;
 
     void nacrtajScenu();
     void podesiUIElemente();
@@ -70,6 +68,9 @@ private:
 
     void sortirajProcesePoRednomBroju(std::vector<Proces> &vector);
     void dodatnoSortirajPoRednomBroju(std::string tipSortiranja, std::vector<Proces> &redCekanja);
+
+    bool imaKraceVrijemeIzvrsavanja(std::vector<Proces>& redCekanja,const Proces& trenutniProces);
+    bool imaVeciPrioritet(std::vector<Proces>& redCekanja,const Proces& trenutniProces);
 };
 
 #endif // DIALOG_H

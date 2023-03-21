@@ -1,10 +1,13 @@
-#include "dialog.h"
-#include "ui_dialog.h"
-#include "proces.h"
-#include <QDebug>
 #include <algorithm>
 #include <vector>
 #include <string>
+
+#include "dialog.h"
+#include "ui_dialog.h"
+#include "proces.h"
+
+#include <QDebug>
+
 
 Dialog::Dialog(QWidget *parent) : QDialog(parent),
                                   ui(new Ui::Dialog)
@@ -389,9 +392,10 @@ void Dialog::pripremiRR()
 
     sortirajProcesePoTrenutkuDolaska(procesi); // sortiraj prvobitni niz po trenutku dolaska procesa
 
-    std::vector<Proces> redCekanja;
+    std::vector<Proces> waitStanje;
+    std::vector<Proces> readyStanje;
     std::vector<Proces> trenutniRedIzvrsavanja; // sluzi za pohranu procesa koji se trenutno izvrsava
-    redCekanja.clear();                         // u slucaju da korisnik pokrece isti algoritam drugi put
+    waitStanje.clear();                         // u slucaju da korisnik pokrece isti algoritam drugi put
     redoslijedIzvrsavanja.clear();              // u slucaju da korisnik pokrece isti algoritam drugi put
 
     int preostaloVrijemeIzvrsavanjaSvihProcesa = 0;
@@ -406,20 +410,77 @@ void Dialog::pripremiRR()
             // ukoliko proces dolazi u ovom ciklusu
             if (procesi[i].trenutakDolaska == ciklus)
             {
-                redCekanja.push_back(procesi[i]); // dodaj proces u red cekanja
+                waitStanje.push_back(procesi[i]); // dodaj proces u red cekanja
             }
+
         }
+
+        //
+        if (!readyStanje.empty())
+        {
+            waitStanje.push_back(readyStanje.front()); // dodaj proces u red cekanja
+            readyStanje.clear();
+        }
+        qDebug()<<ciklus;
+
+        qDebug()<<"###########redCekanja########";
+        for(auto it :waitStanje)
+        {
+            qDebug()<<"Proces P"<<it.redniBroj+1;
+            qDebug()<<"Proces P"<<it.redniBroj+1<<".burst"<<it.burst;
+            qDebug()<<"Proces P"<<it.redniBroj+1<<".preostaloVrijemeIzvrsavanja"<<it.preostaloVrijemeIzvrsavanja;
+            qDebug()<<"Proces P"<<it.redniBroj+1<<".prioritet"<<it.prioritet;
+            qDebug()<<"Proces P"<<it.redniBroj+1<<".trajanje"<<it.trajanje;
+            qDebug()<<"Proces P"<<it.redniBroj+1<<".trenutakDolaska"<<it.trenutakDolaska;
+        }
+        qDebug()<<"###########redCekanja########";
 
         // ukoliko u trenutnom redu izvrsavanja nema procesa
         if (trenutniRedIzvrsavanja.empty())
         {
             // dodaj prvi proces iz reda cekanja u trenutni red izvrsavanja
-            trenutniRedIzvrsavanja.push_back(redCekanja.front()); // dodaj proces u trenutni red izvrsavanja
-            redCekanja.erase(redCekanja.begin()); // obrisi proces iz reda cekanja
+            trenutniRedIzvrsavanja.push_back(waitStanje.front()); // dodaj proces u trenutni red izvrsavanja
+            waitStanje.erase(waitStanje.begin()); // obrisi proces iz reda cekanja
         }
 
+        qDebug()<<"###########trenutniRedIzvrsavanja########";
+        for(auto it :trenutniRedIzvrsavanja)
+        {
+            qDebug()<<"Proces P"<<it.redniBroj+1;
+            qDebug()<<"Proces P"<<it.redniBroj+1<<".burst"<<it.burst;
+            qDebug()<<"Proces P"<<it.redniBroj+1<<".preostaloVrijemeIzvrsavanja"<<it.preostaloVrijemeIzvrsavanja;
+            qDebug()<<"Proces P"<<it.redniBroj+1<<".prioritet"<<it.prioritet;
+            qDebug()<<"Proces P"<<it.redniBroj+1<<".trajanje"<<it.trajanje;
+            qDebug()<<"Proces P"<<it.redniBroj+1<<".trenutakDolaska"<<it.trenutakDolaska;
+        }
+        qDebug()<<"###########redCekanja########";
+
+        // umanji vrijeme izvrsavanja procesa koji se trenutno izvrsava, povecaj mu burst
+        trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja -= 1;
+        trenutniRedIzvrsavanja.back().burst += 1;
+
+        // proces je izvrsen
+        if (trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja <= 0 || trenutniRedIzvrsavanja.back().burst == TIME_QUANTUM)
+        {
+            qDebug()<<"Proces P"<<trenutniRedIzvrsavanja.back().redniBroj+1<<" je izvrsen";
+            redoslijedIzvrsavanja.push_back(trenutniRedIzvrsavanja.back()); // dodaj proces u redoslijed izvrsavanja
+
+            if(trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja > 0)
+            {
+                trenutniRedIzvrsavanja.back().burst = 0; // resetuj burst procesa
+                readyStanje.push_back(trenutniRedIzvrsavanja.back()); // dodaj proces u ready stanje
+
+            }
+
+                trenutniRedIzvrsavanja.clear(); // ocisti trenutni red izvrsavanja
+
+            qDebug()<<"********************************************";
+        }
+
+
+
         // provjeri koliko je vremena preostalo da se procesi zavrse
-        for (auto it : redCekanja)
+        for (auto it : waitStanje)
         {
             preostaloVrijemeIzvrsavanjaSvihProcesa += it.preostaloVrijemeIzvrsavanja;
         }
@@ -428,33 +489,10 @@ void Dialog::pripremiRR()
             preostaloVrijemeIzvrsavanjaSvihProcesa += it.preostaloVrijemeIzvrsavanja;
         }
 
-        // proces je izvrsen
-        if (trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja <= 0)
-        {
-            redoslijedIzvrsavanja.push_back(trenutniRedIzvrsavanja.back()); // dodaj proces u redoslijed izvrsavanja
-            trenutniRedIzvrsavanja.clear(); // ocisti trenutni red izvrsavanja
-        }
-        // proces nije izvrsen, TIME_QUANTUM nije isteko
-        else if (trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja > 0 && trenutniRedIzvrsavanja.back().burst != TIME_QUANTUM)
-        {
-            // umanji vrijeme izvrsavanja procesa koji se trenutno izvrsava, povecaj mu burst
-            trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja -= 1;
-            trenutniRedIzvrsavanja.back().burst += 1;
-        }
-        // proces nije izvrsen, TIME_QUANTUM je isteko
-        else if (trenutniRedIzvrsavanja.back().preostaloVrijemeIzvrsavanja > 0 && trenutniRedIzvrsavanja.back().burst == TIME_QUANTUM)
-        {
-            redoslijedIzvrsavanja.push_back(trenutniRedIzvrsavanja.back()); // dodaj proces u redoslijed izvrsavanja
-
-            trenutniRedIzvrsavanja.back().burst = 0; // resetuj burst procesa
-            redCekanja.push_back(trenutniRedIzvrsavanja.back()); // dodaj proces ponovo u red cekanja
-
-            trenutniRedIzvrsavanja.clear(); // ocisti trenutni red izvrsavanja
-        }
-
         // inkrementiraj ciklus
         ciklus++;
     } while (preostaloVrijemeIzvrsavanjaSvihProcesa > 0);
+    qDebug()<<ciklus;
 }
 
 // funkcija koja priprema redoslijed procesa za crtanje Prioritet algoritma
