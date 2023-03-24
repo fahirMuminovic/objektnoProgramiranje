@@ -1,6 +1,11 @@
 #include "dialog.h"
 #include "ui_dialog.h"
 #include <QPainter>
+#include <QGraphicsEllipseItem>
+#include <QGraphicsView>
+#include <QPropertyAnimation>
+#include <QGraphicsSceneMouseEvent>
+
 
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
@@ -102,6 +107,13 @@ void Dialog::pomjeriProces(){
 
             ui->graphicsView->viewport()->repaint();
         }
+
+        QGraphicsEllipseItem *ellipse = new QGraphicsEllipseItem(QRectF(0, 0, 10, 10), Dialog::scene);
+        ellipse->setBrush(Qt::red);
+        qDebug()<<ellipse->pos();
+        // Set the position of the ellipse item on the scene
+        ellipse->setPos(100, 100);
+        scene->addItem(ellipse);
     }
     if(sender()==runReadyTranzicija){
         if(!provjeriErrore(runStanje,readyStanje)){
@@ -144,3 +156,12 @@ void Dialog::pomjeriProces(){
         }
     }
 }
+
+void Dialog::mousePressEvent(QGraphicsSceneMouseEvent *event){
+    // get the position of the mouse click
+    QPointF pos = event->scenePos();
+
+    // log the position
+    qDebug() << "Mouse clicked at position:" << pos;
+}
+

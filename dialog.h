@@ -37,6 +37,9 @@ private slots:
     // pomjera proces iz jednog stanja u drugo
     void pomjeriProces();
 
+protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+
 private:
     Ui::Dialog *ui;
     QGraphicsScene *scene;

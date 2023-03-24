@@ -1,13 +1,14 @@
 #include "tranzicija.h"
+#include <QGraphicsSceneMouseEvent>
 
 Tranzicija::Tranzicija(int koordinataX, int koordinataY,int duzina, int rotacija)
 {
     this->koordinataX = koordinataX;
     this->koordinataY = koordinataY;
-    this->tempX = koordinataX;
-    this->tempY = koordinataY;
     this->rotacija = rotacija;
     this->duzina = duzina;
+
+    setFlag(ItemIsMovable);
 }
 
 void Tranzicija::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget){
@@ -75,4 +76,10 @@ QRectF Tranzicija::boundingRect() const{
 void Tranzicija::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     emit onClick();
+
+    // get the position of the mouse click
+    QPointF pos = event->scenePos();
+
+    // log the position
+    qDebug() << "Mouse clicked at position:" << pos;
 }
