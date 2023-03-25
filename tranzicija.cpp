@@ -7,8 +7,7 @@ Tranzicija::Tranzicija(int koordinataX, int koordinataY,int duzina, int rotacija
     this->koordinataY = koordinataY;
     this->rotacija = rotacija;
     this->duzina = duzina;
-
-    setFlag(ItemIsMovable);
+//    setFlag(ItemIsMovable);
 }
 
 void Tranzicija::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget){

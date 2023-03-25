@@ -27,7 +27,7 @@ public:
     // spoji signale
     void konektujSignale();
     // koristi se za provjeru broja procesa unutar stanja
-    bool provjeriErrore(Stanje *izStanja, Stanje *doStanja);
+    bool imaErrore(Stanje *izStanja, Stanje *doStanja);
 
 private slots:
     // reaguje na klik pushButtona imena kreirajProces

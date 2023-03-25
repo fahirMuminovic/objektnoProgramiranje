@@ -94,65 +94,191 @@ void Dialog::konektujSignale() {
 }
 
 // provjera da li se procesi mogu prebaciti iz odgovarajucih stanja
-bool Dialog::provjeriErrore(Stanje *izStanja, Stanje *doStanja){
-    return izStanja->brojProcesa == 0 || doStanja->brojProcesa == 5;
+bool Dialog::imaErrore(Stanje *izStanja, Stanje *doStanja){
+    return izStanja->brojProcesa <= 0 || doStanja->brojProcesa >= 5;
 }
 
 // funkcija koja prebacuje procese iz jednog stanja u drugo na klik strelice
 void Dialog::pomjeriProces(){
     if(sender()==readyRunTranzicija){
-        if(!provjeriErrore(readyStanje,runStanje)){
+        if(!imaErrore(readyStanje,runStanje)){
             readyStanje->brojProcesa--;
-            runStanje->brojProcesa++;
 
-            ui->graphicsView->viewport()->repaint();
+            QGraphicsEllipseItem *ellipse = new QGraphicsEllipseItem(QRectF(0, 0, 10, 10));
+            ellipse->setBrush(Qt::red);
+//            qDebug()<<ellipse->pos();
+            // Set the position of the ellipse item on the scene
+            ellipse->setPos(256, 300);
+            scene->addItem(ellipse);
+
+            // Create a QTimer object and connect its timeout signal to a slot
+            QTimer* timer = new QTimer();
+            QObject::connect(timer, &QTimer::timeout, [=]() {
+                // Move the ellipse item's position by a certain amount
+                ellipse->setPos(ellipse->pos() + QPointF(10, 0));
+        //                qDebug()<<ellipse->pos();
+        //                qDebug()<<timer->remainingTime();
+                if(ellipse->pos() == QPointF(536,300))
+                {
+                    runStanje->brojProcesa++;
+                    timer->stop();
+                    scene->removeItem(ellipse);
+                    ui->graphicsView->viewport()->repaint();
+                }
+            });
+
+            // Set the interval of the timer in milliseconds and start it
+            timer->start(30);
         }
-
-        QGraphicsEllipseItem *ellipse = new QGraphicsEllipseItem(QRectF(0, 0, 10, 10), Dialog::scene);
-        ellipse->setBrush(Qt::red);
-        qDebug()<<ellipse->pos();
-        // Set the position of the ellipse item on the scene
-        ellipse->setPos(100, 100);
-        scene->addItem(ellipse);
     }
     if(sender()==runReadyTranzicija){
-        if(!provjeriErrore(runStanje,readyStanje)){
+        if(!imaErrore(runStanje,readyStanje)){
             runStanje->brojProcesa--;
-            readyStanje->brojProcesa++;
 
-            ui->graphicsView->viewport()->repaint();
+            QGraphicsEllipseItem *ellipse = new QGraphicsEllipseItem(QRectF(0, 0, 10, 10));
+            ellipse->setBrush(Qt::red);
+//            qDebug()<<ellipse->pos();
+            // Set the position of the ellipse item on the scene
+            ellipse->setPos(536, 300);
+            scene->addItem(ellipse);
+
+            // Create a QTimer object and connect its timeout signal to a slot
+            QTimer* timer = new QTimer();
+            QObject::connect(timer, &QTimer::timeout, [=]() {
+                // Move the ellipse item's position by a certain amount
+                ellipse->setPos(ellipse->pos() + QPointF(-10, 0));
+                if(ellipse->pos() == QPointF(256,300))
+                {
+                    readyStanje->brojProcesa++;
+                    timer->stop();
+                    scene->removeItem(ellipse);
+                    ui->graphicsView->viewport()->repaint();
+                }
+            });
+
+            // Set the interval of the timer in milliseconds and start it
+            timer->start(30);
         }
     }
     if(sender()==startReadyTranzicija){
-        if(!provjeriErrore(startStanje,readyStanje)){
+        if(!imaErrore(startStanje,readyStanje)){
             startStanje->brojProcesa--;
-            readyStanje->brojProcesa++;
 
-            ui->graphicsView->viewport()->repaint();
+            QGraphicsEllipseItem *ellipse = new QGraphicsEllipseItem(QRectF(0, 0, 10, 10));
+            ellipse->setBrush(Qt::red);
+//            qDebug()<<ellipse->pos();
+            // Set the position of the ellipse item on the scene
+            ellipse->setPos(53, 126);
+            scene->addItem(ellipse);
+
+            // Create a QTimer object and connect its timeout signal to a slot
+            QTimer* timer = new QTimer();
+            QObject::connect(timer, &QTimer::timeout, [=]() {
+                // Move the ellipse item's position by a certain amount
+                ellipse->setPos(ellipse->pos() + QPointF(10, 13));
+//                qDebug()<<ellipse->pos();
+                if(ellipse->pos() == QPointF(153,256))
+                {
+                    readyStanje->brojProcesa++;
+                    timer->stop();
+                    scene->removeItem(ellipse);
+                    ui->graphicsView->viewport()->repaint();
+                }
+            });
+
+            // Set the interval of the timer in milliseconds and start it
+            timer->start(40);
         }
     }
     if(sender()==runWaitTranzicija){
-        if(!provjeriErrore(runStanje,waitStanje)){
+        if(!imaErrore(runStanje,waitStanje)){
             runStanje->brojProcesa--;
-            waitStanje->brojProcesa++;
 
-            ui->graphicsView->viewport()->repaint();
+            QGraphicsEllipseItem *ellipse = new QGraphicsEllipseItem(QRectF(0, 0, 10, 10));
+            ellipse->setBrush(Qt::red);
+//            qDebug()<<ellipse->pos();
+            // Set the position of the ellipse item on the scene
+            ellipse->setPos(593, 360);
+            scene->addItem(ellipse);
+
+            // Create a QTimer object and connect its timeout signal to a slot
+            QTimer* timer = new QTimer();
+            QObject::connect(timer, &QTimer::timeout, [=]() {
+                // Move the ellipse item's position by a certain amount
+                ellipse->setPos(ellipse->pos() + QPointF(-10, 10));
+//                qDebug()<<ellipse->pos();
+                if(ellipse->pos() == QPointF(443,510))
+                {
+                    waitStanje->brojProcesa++;
+                    timer->stop();
+                    scene->removeItem(ellipse);
+                    ui->graphicsView->viewport()->repaint();
+                }
+            });
+
+            // Set the interval of the timer in milliseconds and start it
+            timer->start(35);
         }
     }
     if(sender()==waitReadyTranzicija){
-        if(!provjeriErrore(waitStanje,readyStanje)){
+        if(!imaErrore(waitStanje,readyStanje)){
             waitStanje->brojProcesa--;
-            readyStanje->brojProcesa++;
 
-            ui->graphicsView->viewport()->repaint();
+            QGraphicsEllipseItem *ellipse = new QGraphicsEllipseItem(QRectF(0, 0, 10, 10));
+            ellipse->setBrush(Qt::red);
+//            qDebug()<<ellipse->pos();
+            // Set the position of the ellipse item on the scene
+            ellipse->setPos(350, 511);
+            scene->addItem(ellipse);
+
+            // Create a QTimer object and connect its timeout signal to a slot
+            QTimer* timer = new QTimer();
+            QObject::connect(timer, &QTimer::timeout, [=]() {
+                // Move the ellipse item's position by a certain amount
+                ellipse->setPos(ellipse->pos() + QPointF(-10, -10));
+//                qDebug()<<ellipse->pos();
+                if(ellipse->pos() == QPointF(190,351))
+                {
+                    readyStanje->brojProcesa++;
+                    timer->stop();
+                    scene->removeItem(ellipse);
+                    ui->graphicsView->viewport()->repaint();
+                }
+            });
+
+            // Set the interval of the timer in milliseconds and start it
+            timer->start(35);
         }
     }
     if(sender()==runStopTranzicija){
-        if(!provjeriErrore(runStanje,stopStanje)){
+        if(!imaErrore(runStanje,stopStanje)){
             runStanje->brojProcesa--;
-            stopStanje->brojProcesa++;
 
-            ui->graphicsView->viewport()->repaint();
+
+            QGraphicsEllipseItem *ellipse = new QGraphicsEllipseItem(QRectF(0, 0, 10, 10));
+            ellipse->setBrush(Qt::red);
+//            qDebug()<<ellipse->pos();
+            // Set the position of the ellipse item on the scene
+            ellipse->setPos(621, 250);
+            scene->addItem(ellipse);
+
+            // Create a QTimer object and connect its timeout signal to a slot
+            QTimer* timer = new QTimer();
+            QObject::connect(timer, &QTimer::timeout, [=]() {
+                // Move the ellipse item's position by a certain amount
+                ellipse->setPos(ellipse->pos() + QPointF(10, -14));
+//                qDebug()<<ellipse->pos();
+                if(ellipse->pos() == QPointF(721,110))
+                {
+                    stopStanje->brojProcesa++;
+                    timer->stop();
+                    scene->removeItem(ellipse);
+                    ui->graphicsView->viewport()->repaint();
+                }
+            });
+
+            // Set the interval of the timer in milliseconds and start it
+            timer->start(40);
         }
     }
 }
