@@ -45,30 +45,17 @@ void Tranzicija::paint(QPainter * painter, const QStyleOptionGraphicsItem * opti
 
 // funkcija koja definira granice elementa
 QRectF Tranzicija::boundingRect() const{
-    if(rotacija == 0){
-        //ready run
-        return QRectF(260, 315, 285, 30);
-    }
-    else if(rotacija == 180){
-        // run ready
-        return QRectF(255, 265, 285, 30);
-    }
-    else if(rotacija == 53){
-        // start ready
-        return QRectF(65, 120, 105, 135);
-    }
-    else if(rotacija == 307){
-        // run stop
-        return QRectF(632, 125, 112, 138);
-    }
-    else if(rotacija == 135){
-        // run wait
-        return QRectF(435, 348, 145, 142);
-    }
-    else {
-        // wait ready
-        return QRectF(218, 353, 142, 140);
-    }
+    // definisi mapu koja kao kljuc sadrzi rotaciju a kao vrijednost koordinate boundingRect-a
+    QMap<int, QRectF> boundingRects {
+    { 0, QRectF(260, 315, 285, 30) }, // ready run
+    { 180, QRectF(255, 265, 285, 30) }, // run ready
+    { 53, QRectF(65, 120, 105, 135) }, // start ready
+    { 307, QRectF(632, 125, 112, 138) }, // run stop
+    { 135, QRectF(435, 348, 145, 142) }, // run wait
+    { 225, QRectF(218, 353, 142, 140) } // wait ready
+    };
+
+    return boundingRects[rotacija];
 }
 
 void Tranzicija::mousePressEvent(QGraphicsSceneMouseEvent *event)
