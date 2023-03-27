@@ -1,13 +1,18 @@
 #include "stanje.h"
 
-Stanje::Stanje(int x, int y, QString naslovStanja){
+Stanje::Stanje(int x, int y, QString naslovStanja)
+{
     koordinataX = x;
     koordinataY = y;
     naslov = naslovStanja;
     brojProcesa = 0;
 }
 
-void Stanje::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget){
+void Stanje::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+
     // koordinate za iscrtavanje ruba elementa koje uzimamo iz boundingRect() funkcije
     QRectF koordinateRuba = boundingRect();
     // boje koje se koriste za element
@@ -30,29 +35,28 @@ void Stanje::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, 
     painter->setBrush(zutaBoja);
     painter->drawEllipse(koordinateRuba);
 
-    //iscrtavanje naslova elementa
+    // iscrtavanje naslova elementa
     painter->setFont(font);
     painter->drawText(koordinataX + 28, koordinataY + 40, naslov);
 
     // iscrtavanje reda čekanja elementa
     painter->setPen(pen);
     painter->setBrush(sivaBoja);
-
-    painter->drawRect(QRect(koordinataX + 12,koordinataY + 50, 15, 15));
-    painter->drawRect(QRect(koordinataX + 27,koordinataY + 50, 15, 15));
-    painter->drawRect(QRect(koordinataX + 42,koordinataY + 50, 15, 15));
-    painter->drawRect(QRect(koordinataX + 57,koordinataY + 50, 15, 15));
-    painter->drawRect(QRect(koordinataX + 72,koordinataY + 50, 15, 15));
+    for (int i = 0; i < 5; i++)
+    {
+        painter->drawRect(QRect(koordinataX + 12 + (i * 15), koordinataY + 50, 15, 15));
+    }
 
     // iscrtavanje procesa unutar reda čekanja za element
     painter->setBrush(crvenaBoja);
-    for (int i = 0; i < brojProcesa; i ++){
-        painter->drawEllipse(QRect(koordinataX + 15 * (i+1), koordinataY + 52, 10, 10));
+    for (int i = 0; i < brojProcesa; i++)
+    {
+        painter->drawEllipse(QRect(koordinataX + 15 * (i + 1), koordinataY + 52, 10, 10));
     }
-
 }
 
 // funkcija koja definira granice elementa
-QRectF Stanje::boundingRect() const{
+QRectF Stanje::boundingRect() const
+{
     return QRectF(koordinataX, koordinataY, 100, 100);
 }

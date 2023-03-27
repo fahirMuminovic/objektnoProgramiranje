@@ -3,7 +3,6 @@
 #include <QPainter>
 #include <QGraphicsEllipseItem>
 #include <QGraphicsView>
-#include <QPropertyAnimation>
 #include <QGraphicsSceneMouseEvent>
 #include <QMap>
 #include <QPair>
