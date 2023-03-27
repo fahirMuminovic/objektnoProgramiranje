@@ -9,8 +9,7 @@
 #include <QPainterPath>
 #include <QPainter>
 #include <QtGui>
-#include <QTimer>
-#include <QDebug>
+//#include <QTimer>
 
 class Tranzicija : public QObject, public QGraphicsItem
 {
@@ -18,11 +17,11 @@ class Tranzicija : public QObject, public QGraphicsItem
     Q_OBJECT
 public:
     // konstruktor klase
-    Tranzicija(int koordinataX, int koordinataY,int duzina, int rotacija);
+    Tranzicija(int koordinataX, int koordinataY, int duzina, int rotacija);
     // metoda overloada QPainter
-    void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget  * widget);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    // vraca bounding rect
     QRectF boundingRect() const;
-
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -34,8 +33,6 @@ public:
     int duzina;
     int koordinataX;
     int koordinataY;
-    int tempX;
-    int tempY;
     int rotacija;
 };
 
