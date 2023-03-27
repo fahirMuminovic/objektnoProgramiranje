@@ -97,106 +97,44 @@ bool Dialog::imaErrore(Stanje *izStanja, Stanje *doStanja){
     return izStanja->brojProcesa <= 0 || doStanja->brojProcesa >= 5;
 }
 
-// pokrece animaciju prelazka procesa za odredjeno stanje
+// pokrece animaciju prelaska procesa iz jednog stanja u drugo
 void Dialog::pokreniAnimaciju(Stanje *izStanja, Stanje *doStanja)
 {
-    QPointF pocetnaPozicija;
-    QPointF krajnjaPozicija;
-    QPointF korak;
-    int interval;
+    // definisi parametre animacije kao strukturu
+    struct ParametriAnimacija {
+        QPointF pocetnaPozicija;
+        QPointF krajnjaPozicija;
+        QPointF korak;
+        int interval;
+    };
 
-    if(izStanja == readyStanje && doStanja == runStanje)
-    {
-        pocetnaPozicija.setX(256);
-        pocetnaPozicija.setY(300);
+    // definisi mapu koja sadrzi stanja i parametre animacije za ta stanja
+    QMap<QPair<Stanje*, Stanje*>, ParametriAnimacija> animationMap {
+        { { readyStanje, runStanje }, { { 256, 300 }, { 536, 300 }, { 10, 0 }, 15 } },
+        { { runStanje, readyStanje }, { { 536, 300 }, { 256, 300 }, { -10, 0 }, 15 } },
+        { { startStanje, readyStanje }, { { 50, 126 }, { 150, 276 }, { 1, 1.5 }, 3 } },
+        { { runStanje, waitStanje }, { { 593, 360 }, { 443, 510 }, { -1, 1 }, 3 } },
+        { { waitStanje, readyStanje }, { { 350, 511 }, { 190, 351 }, { -1, -1 }, 3 } },
+        { { runStanje, stopStanje }, { { 620, 240 }, { 730, 86 }, { 1, -1.4 }, 3 } }
+    };
 
-        krajnjaPozicija.setX(536);
-        krajnjaPozicija.setY(300);
+    // pronadji parametre animacije za stanja koja su proslijedjena kao parametri u funkciju
+    ParametriAnimacija parametriAnimacije = animationMap.value(qMakePair(izStanja, doStanja));
 
-        korak.setX(10);
-        korak.setY(0);
-
-        interval = 15;
-    }
-    else if(izStanja == runStanje && doStanja == readyStanje)
-    {
-        pocetnaPozicija.setX(536);
-        pocetnaPozicija.setY(300);
-
-        krajnjaPozicija.setX(256);
-        krajnjaPozicija.setY(300);
-
-        korak.setX(-10);
-        korak.setY(0);
-
-        interval = 15;
-    }
-    else if(izStanja == startStanje && doStanja == readyStanje)
-    {
-        pocetnaPozicija.setX(50);
-        pocetnaPozicija.setY(126);
-
-        krajnjaPozicija.setX(150);
-        krajnjaPozicija.setY(276);
-
-        korak.setX(1);
-        korak.setY(1.5);
-
-        interval = 3;
-    }
-    else if(izStanja == runStanje && doStanja == waitStanje)
-    {
-        pocetnaPozicija.setX(593);
-        pocetnaPozicija.setY(360);
-
-        krajnjaPozicija.setX(443);
-        krajnjaPozicija.setY(510);
-
-        korak.setX(-1);
-        korak.setY(1);
-
-        interval = 3;
-    }
-    else if(izStanja == waitStanje && doStanja == readyStanje)
-    {
-        pocetnaPozicija.setX(350);
-        pocetnaPozicija.setY(511);
-
-        krajnjaPozicija.setX(190);
-        krajnjaPozicija.setY(351);
-
-        korak.setX(-1);
-        korak.setY(-1);
-
-        interval = 3;
-    }
-    else if(izStanja == runStanje && doStanja == stopStanje)
-    {
-        pocetnaPozicija.setX(620);
-        pocetnaPozicija.setY(240);
-
-        krajnjaPozicija.setX(730);
-        krajnjaPozicija.setY(86);
-
-        korak.setX(1);
-        korak.setY(-1.4);
-
-        interval = 3;
-    }
-
+    // napravi ellipsu koja predstavlja proces u tranziciji i dodaj je na scenu
     QGraphicsEllipseItem *ellipse = new QGraphicsEllipseItem(QRectF(0, 0, 10, 10));
     ellipse->setBrush(Qt::red);
-
-    // postavi poziciju elipse na sceni
-    ellipse->setPos(pocetnaPozicija);
+    ellipse->setPos(parametriAnimacije.pocetnaPozicija);
     scene->addItem(ellipse);
 
-    // kreiraj QTimer objekt i konektuj njegov timeout signal sa slotom
+    // napravi QTimer objekat i konektuj njegov timeout signal sa lambda funkcijom koja predstavlja animaciju
     QTimer* timer = new QTimer();
     QObject::connect(timer, &QTimer::timeout, [=]() {
-        // pomjeri elipsu na sceni za odredjeni korak
-        ellipse->setPos(ellipse->pos() + korak);
-        if(ellipse->pos() == krajnjaPozicija)
+        // postavi posiciju elipse
+        ellipse->setPos(ellipse->pos() + parametriAnimacije.korak);
+
+        // ukoliko elipsa dodje do svoje krajnje pozicije zaustavi animaciju
+        if(ellipse->pos() == parametriAnimacije.krajnjaPozicija)
         {
             timer->stop();
             scene->removeItem(ellipse);
@@ -204,8 +142,8 @@ void Dialog::pokreniAnimaciju(Stanje *izStanja, Stanje *doStanja)
         }
     });
 
-    // postavi interval timera u milisekundama i pokreni ga
-    timer->start(interval);
+    // postavi interval timera i pokreni ga
+    timer->start(parametriAnimacije.interval);
 }
 
 // funkcija koja prebacuje procese iz jednog stanja u drugo na klik strelice
