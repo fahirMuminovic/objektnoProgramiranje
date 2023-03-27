@@ -1,11 +1,10 @@
 #include "tranzicija.h"
+#include <QGraphicsSceneMouseEvent>
 
 Tranzicija::Tranzicija(int koordinataX, int koordinataY,int duzina, int rotacija)
 {
     this->koordinataX = koordinataX;
     this->koordinataY = koordinataY;
-    this->tempX = koordinataX;
-    this->tempY = koordinataY;
     this->rotacija = rotacija;
     this->duzina = duzina;
 }

@@ -27,7 +27,7 @@ public:
     // spoji signale
     void konektujSignale();
     // koristi se za provjeru broja procesa unutar stanja
-    bool provjeriErrore(Stanje *izStanja, Stanje *doStanja);
+    bool imaErrore(Stanje *izStanja, Stanje *doStanja);
 
 private slots:
     // reaguje na klik pushButtona imena kreirajProces
@@ -36,6 +36,8 @@ private slots:
     void on_unistiProces_clicked();
     // pomjera proces iz jednog stanja u drugo
     void pomjeriProces();
+    // pokrece animaciju za pomijeranje procesa
+    void pokreniAnimaciju(Stanje *izStanja, Stanje *doStanja);
 
 private:
     Ui::Dialog *ui;

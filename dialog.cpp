@@ -1,6 +1,10 @@
 #include "dialog.h"
 #include "ui_dialog.h"
 #include <QPainter>
+#include <QGraphicsEllipseItem>
+#include <QGraphicsView>
+#include <QPropertyAnimation>
+#include <QGraphicsSceneMouseEvent>
 
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
@@ -89,58 +93,82 @@ void Dialog::konektujSignale() {
 }
 
 // provjera da li se procesi mogu prebaciti iz odgovarajucih stanja
-bool Dialog::provjeriErrore(Stanje *izStanja, Stanje *doStanja){
-    return izStanja->brojProcesa == 0 || doStanja->brojProcesa == 5;
+bool Dialog::imaErrore(Stanje *izStanja, Stanje *doStanja){
+    return izStanja->brojProcesa <= 0 || doStanja->brojProcesa >= 5;
+}
+
+// pokrece animaciju prelaska procesa iz jednog stanja u drugo
+void Dialog::pokreniAnimaciju(Stanje *izStanja, Stanje *doStanja)
+{
+    // definisi parametre animacije kao strukturu
+    struct ParametriAnimacija {
+        QPointF pocetnaPozicija;
+        QPointF krajnjaPozicija;
+        QPointF korak;
+        int interval;
+    };
+
+    // definisi mapu koja sadrzi stanja i parametre animacije za ta stanja
+    QMap<QPair<Stanje*, Stanje*>, ParametriAnimacija> animationMap {
+        { { readyStanje, runStanje }, { { 256, 300 }, { 536, 300 }, { 10, 0 }, 15 } },
+        { { runStanje, readyStanje }, { { 536, 300 }, { 256, 300 }, { -10, 0 }, 15 } },
+        { { startStanje, readyStanje }, { { 50, 126 }, { 150, 276 }, { 1, 1.5 }, 3 } },
+        { { runStanje, waitStanje }, { { 593, 360 }, { 443, 510 }, { -1, 1 }, 3 } },
+        { { waitStanje, readyStanje }, { { 350, 511 }, { 190, 351 }, { -1, -1 }, 3 } },
+        { { runStanje, stopStanje }, { { 620, 240 }, { 730, 86 }, { 1, -1.4 }, 3 } }
+    };
+
+    // pronadji parametre animacije za stanja koja su proslijedjena kao parametri u funkciju
+    ParametriAnimacija parametriAnimacije = animationMap.value(qMakePair(izStanja, doStanja));
+
+    // napravi ellipsu koja predstavlja proces u tranziciji i dodaj je na scenu
+    QGraphicsEllipseItem *ellipse = new QGraphicsEllipseItem(QRectF(0, 0, 10, 10));
+    ellipse->setBrush(Qt::red);
+    ellipse->setPos(parametriAnimacije.pocetnaPozicija);
+    scene->addItem(ellipse);
+
+    // napravi QTimer objekat i konektuj njegov timeout signal sa lambda funkcijom koja predstavlja animaciju
+    QTimer* timer = new QTimer();
+    QObject::connect(timer, &QTimer::timeout, [=]() {
+        // postavi posiciju elipse
+        ellipse->setPos(ellipse->pos() + parametriAnimacije.korak);
+
+        // ukoliko elipsa dodje do svoje krajnje pozicije zaustavi animaciju
+        if(ellipse->pos() == parametriAnimacije.krajnjaPozicija)
+        {
+            timer->stop();
+            scene->removeItem(ellipse);
+            ui->graphicsView->viewport()->repaint();
+        }
+    });
+
+    // postavi interval timera i pokreni ga
+    timer->start(parametriAnimacije.interval);
 }
 
 // funkcija koja prebacuje procese iz jednog stanja u drugo na klik strelice
 void Dialog::pomjeriProces(){
-    if(sender()==readyRunTranzicija){
-        if(!provjeriErrore(readyStanje,runStanje)){
-            readyStanje->brojProcesa--;
-            runStanje->brojProcesa++;
 
-            ui->graphicsView->viewport()->repaint();
-        }
-    }
-    if(sender()==runReadyTranzicija){
-        if(!provjeriErrore(runStanje,readyStanje)){
-            runStanje->brojProcesa--;
-            readyStanje->brojProcesa++;
+    // definisi mapu koja sadrzi tranzicije i stanja povezana sa tom tranzicijom
+    QMap<QObject*, QPair<Stanje*, Stanje*>> tranzicije {
+    {readyRunTranzicija, {readyStanje, runStanje}},
+    {runReadyTranzicija, {runStanje, readyStanje}},
+    {startReadyTranzicija, {startStanje, readyStanje}},
+    {runWaitTranzicija, {runStanje, waitStanje}},
+    {waitReadyTranzicija, {waitStanje, readyStanje}},
+    {runStopTranzicija, {runStanje, stopStanje}}
+    };
 
-            ui->graphicsView->viewport()->repaint();
-        }
-    }
-    if(sender()==startReadyTranzicija){
-        if(!provjeriErrore(startStanje,readyStanje)){
-            startStanje->brojProcesa--;
-            readyStanje->brojProcesa++;
+    // pronadji povezana stanja sa kliknutom tranzicijom
+    QPair<Stanje*, Stanje*> povezanaStanja = tranzicije[sender()];
 
-            ui->graphicsView->viewport()->repaint();
-        }
-    }
-    if(sender()==runWaitTranzicija){
-        if(!provjeriErrore(runStanje,waitStanje)){
-            runStanje->brojProcesa--;
-            waitStanje->brojProcesa++;
+    // provjeri errore
+    if(!imaErrore(povezanaStanja.first, povezanaStanja.second)){
+        // update-uj broj procesa u povezanim stanjima
+        povezanaStanja.first->brojProcesa--;
+        povezanaStanja.second->brojProcesa++;
 
-            ui->graphicsView->viewport()->repaint();
-        }
-    }
-    if(sender()==waitReadyTranzicija){
-        if(!provjeriErrore(waitStanje,readyStanje)){
-            waitStanje->brojProcesa--;
-            readyStanje->brojProcesa++;
-
-            ui->graphicsView->viewport()->repaint();
-        }
-    }
-    if(sender()==runStopTranzicija){
-        if(!provjeriErrore(runStanje,stopStanje)){
-            runStanje->brojProcesa--;
-            stopStanje->brojProcesa++;
-
-            ui->graphicsView->viewport()->repaint();
-        }
+        // pokreni animaciju za tranziciju
+        pokreniAnimaciju(povezanaStanja.first, povezanaStanja.second);
     }
 }
