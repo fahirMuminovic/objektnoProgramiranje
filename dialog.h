@@ -36,9 +36,8 @@ private slots:
     void on_unistiProces_clicked();
     // pomjera proces iz jednog stanja u drugo
     void pomjeriProces();
-
-protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    // pokrece animaciju za pomijeranje procesa
+    void pokreniAnimaciju(Stanje *izStanja, Stanje *doStanja);
 
 private:
     Ui::Dialog *ui;

@@ -76,9 +76,9 @@ void Tranzicija::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     emit onClick();
 
-    // get the position of the mouse click
-    QPointF pos = event->scenePos();
+//    // get the position of the mouse click
+//    QPointF pos = event->scenePos();
 
-    // log the position
-    qDebug() << "Mouse clicked at position:" << pos;
+//    // log the position
+//    qDebug() << "Mouse clicked at position:" << pos;
 }
