@@ -17,7 +17,7 @@ void Tranzicija::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 
     QPen linije;
     QBrush boja;
-    QPainterPath strelica;
+    QPainterPath podrucjeZaObojiti;
     QPolygon tackeStrelice;
 
     // odredjuje tacke koje ce se koristiti u addPolygon metodi
@@ -38,14 +38,17 @@ void Tranzicija::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     boja.setColor(Qt::green);
     boja.setStyle(Qt::SolidPattern);
 
-    // pravi strelicu na osnovu zadanih tacki
-    strelica.addPolygon(tackeStrelice);
-    // rotacija strelice
+    // odredjuje podrucje koje se treba obojiti brushom
+    podrucjeZaObojiti.addPolygon(tackeStrelice);
+
+    // rotiraj strelicu
     painter->rotate(rotacija);
-    // crta strelicu
+
+    // nacrtaj strelicu
     painter->drawPolygon(tackeStrelice);
-    // boji strelicu
-    painter->fillPath(strelica, boja);
+
+    // oboji strelicu
+    painter->fillPath(podrucjeZaObojiti, boja);
 }
 
 // funkcija koja definira granice elementa

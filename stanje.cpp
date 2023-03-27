@@ -14,33 +14,30 @@ void Stanje::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     Q_UNUSED(widget);
 
     // koordinate za iscrtavanje ruba elementa koje uzimamo iz boundingRect() funkcije
-    QRectF koordinateRuba = boundingRect();
+    QRectF rubElipse = boundingRect();
     // boje koje se koriste za element
     QBrush zutaBoja(Qt::yellow);
     QBrush sivaBoja(Qt::gray);
     QBrush crvenaBoja(Qt::red);
 
-    // rubElementa se koristi za iscrtavanje linije ruba elementa
-    QPen rubElementa;
-    rubElementa.setWidth(3);
-    rubElementa.setBrush(Qt::black);
+    // linija ruba elementa Stanje
+    QPen rubElementaStanja(Qt::black, 2);
     // qt default pen
-    QPen pen;
-    // font za naslov elementa
-    QFont font("Times New Roman", 15);
-    font.setBold(true);
+    QPen defaultPen;
+    // font za naslov Stanja
+    QFont font("Times New Roman", 15, QFont::Bold);
 
     // iscrtavanje glavnog dijela elementa
-    painter->setPen(rubElementa);
+    painter->setPen(rubElementaStanja);
     painter->setBrush(zutaBoja);
-    painter->drawEllipse(koordinateRuba);
+    painter->drawEllipse(rubElipse);
 
     // iscrtavanje naslova elementa
     painter->setFont(font);
     painter->drawText(koordinataX + 28, koordinataY + 40, naslov);
 
     // iscrtavanje reda čekanja elementa
-    painter->setPen(pen);
+    painter->setPen(defaultPen);
     painter->setBrush(sivaBoja);
     for (int i = 0; i < 5; i++)
     {
