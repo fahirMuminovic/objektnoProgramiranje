@@ -210,54 +210,27 @@ void Dialog::pokreniAnimaciju(Stanje *izStanja, Stanje *doStanja)
 
 // funkcija koja prebacuje procese iz jednog stanja u drugo na klik strelice
 void Dialog::pomjeriProces(){
-    if(sender()==readyRunTranzicija){
-        if(!imaErrore(readyStanje,runStanje)){
-            // podesi novi broj procesa u stanju
-            readyStanje->brojProcesa--;
-            runStanje->brojProcesa++;
 
-            //pokreni animaciju za stanje
-            pokreniAnimaciju(readyStanje,runStanje);
-        }
-    }
-    if(sender()==runReadyTranzicija){
-        if(!imaErrore(runStanje,readyStanje)){
-            runStanje->brojProcesa--;
-            readyStanje->brojProcesa++;
+    // definisi mapu koja sadrzi tranzicije i stanja povezana sa tom tranzicijom
+    QMap<QObject*, QPair<Stanje*, Stanje*>> tranzicije {
+    {readyRunTranzicija, {readyStanje, runStanje}},
+    {runReadyTranzicija, {runStanje, readyStanje}},
+    {startReadyTranzicija, {startStanje, readyStanje}},
+    {runWaitTranzicija, {runStanje, waitStanje}},
+    {waitReadyTranzicija, {waitStanje, readyStanje}},
+    {runStopTranzicija, {runStanje, stopStanje}}
+    };
 
-            pokreniAnimaciju(runStanje,readyStanje);
-        }
-    }
-    if(sender()==startReadyTranzicija){
-        if(!imaErrore(startStanje,readyStanje)){
-            startStanje->brojProcesa--;
-            readyStanje->brojProcesa++;
+    // pronadji povezana stanja sa kliknutom tranzicijom
+    QPair<Stanje*, Stanje*> povezanaStanja = tranzicije[sender()];
 
-            pokreniAnimaciju(startStanje,readyStanje);
-        }
-    }
-    if(sender()==runWaitTranzicija){
-        if(!imaErrore(runStanje,waitStanje)){
-            runStanje->brojProcesa--;
-            waitStanje->brojProcesa++;
+    // provjeri errore
+    if(!imaErrore(povezanaStanja.first, povezanaStanja.second)){
+        // update-uj broj procesa u povezanim stanjima
+        povezanaStanja.first->brojProcesa--;
+        povezanaStanja.second->brojProcesa++;
 
-            pokreniAnimaciju(runStanje,waitStanje);
-        }
-    }
-    if(sender()==waitReadyTranzicija){
-        if(!imaErrore(waitStanje,readyStanje)){
-            waitStanje->brojProcesa--;
-            readyStanje->brojProcesa++;
-
-            pokreniAnimaciju(waitStanje,readyStanje);
-        }
-    }
-    if(sender()==runStopTranzicija){
-        if(!imaErrore(runStanje,stopStanje)){
-            runStanje->brojProcesa--;
-            stopStanje->brojProcesa++;
-
-            pokreniAnimaciju(runStanje,stopStanje);
-        }
+        // pokreni animaciju za tranziciju
+        pokreniAnimaciju(povezanaStanja.first, povezanaStanja.second);
     }
 }
