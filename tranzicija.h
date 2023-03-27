@@ -9,7 +9,6 @@
 #include <QPainterPath>
 #include <QPainter>
 #include <QtGui>
-//#include <QTimer>
 
 class Tranzicija : public QObject, public QGraphicsItem
 {
